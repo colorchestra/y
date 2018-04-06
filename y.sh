@@ -1,13 +1,13 @@
 #!/bin/bash
 
-MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at u go" "nice work, yay")
+MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at u go" "nice work, yay" "u amazinggggggg" "u did good, kid")
 
-BASEDIR=~/y/
+BASEDIR=~/y
 TODAY=$(date --iso-8601)
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-BLUE='\033[0;34m'
 YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 print_tasks() {
@@ -28,7 +28,6 @@ print_tasks() {
 		echo -e "${YELLOW}Done:    ${NC} $f";
 	done
 	cd $BASEDIR
-
 }
 
 print_later() {
@@ -37,6 +36,27 @@ print_later() {
 		echo -e ${RED}Later:${NC} $f;
 	done
 	cd $BASEDIR
+}
+
+print_motivation() {
+	MOTIVOUT=${MOTIVATION[$(shuf -i 0-6 -n 1)]}
+	echo -e ${YELLOW}********************************
+	echo -e ${YELLOW}$MOTIVOUT
+	echo -e ${YELLOW}********************************
+}
+
+feierabend() {
+	echo -e "${GREEN}here's what u did today"
+	printf \\n
+        cd $BASEDIR/done
+        for f in *; do
+                echo -e "${YELLOW}Done:    ${NC} $f";
+        done
+        cd $BASEDIR
+
+	print_motivation
+	printf \\n
+	echo "Good night!"
 }
 
 if [ -z $1 ]; then	# if no arguments given, print all tasks today and tomorrow
@@ -82,9 +102,8 @@ if [ $1 == "done" ]; then
 	mv $BASEDIR/$CURRENTDIR/$2 $BASEDIR/done/
 	printf \\n
 	echo "Done: $2."
-	MOTIVOUT=${MOTIVATION[$(shuf -i 0-4 -n 1)]}
-	echo -e ${YELLOW}$MOTIVOUT
 	printf \\n
+	print_motivation
 #	print_tasks		# not so sure bout dat
 	exit 0
 fi
@@ -96,6 +115,11 @@ fi
 
 if [ $1 == "procrastinate" ]; then
 	echo "STILL IN THE WORKS"
+	exit 0
+fi
+
+if [ $1 == "feierabend" ]; then
+	feierabend
 	exit 0
 fi
 

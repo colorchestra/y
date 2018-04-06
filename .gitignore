@@ -1,4 +1,8 @@
+# data directories
 today/*
 tomorrow/*
 later/*
 done/*
+
+# swap file
+*.swp
