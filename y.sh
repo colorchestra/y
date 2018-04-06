@@ -43,6 +43,7 @@ print_motivation() {
 	echo -e ${YELLOW}********************************
 	echo -e ${YELLOW}$MOTIVOUT
 	echo -e ${YELLOW}********************************
+	printf \\n
 }
 
 feierabend() {
@@ -53,10 +54,18 @@ feierabend() {
                 echo -e "${YELLOW}Done:    ${NC} $f";
         done
         cd $BASEDIR
-
 	print_motivation
-	printf \\n
 	echo "Good night!"
+}
+
+show_usage() {
+	echo "y - the existential task manager"
+	echo "Usage: y -> show all tasks"
+	echo "       y do ([today][tomorrow][later]) Fix printer -> Create new task, defaults to 'today'."
+	echo "       y done Fix printer -> mark task as done"
+	echo "       y later -> take a look at your backlog"
+	echo "       y feierabend -> done for the day"
+	exit 0
 }
 
 if [ -z $1 ]; then	# if no arguments given, print all tasks today and tomorrow
@@ -66,7 +75,7 @@ fi
 
 if [ $1 == "do" ]; then
 	if [ -z $2 ]; then
-		echo -e "${RED}No task or date given - exiting."
+		show_usage
 		exit 1
 	fi
 	if [ $2 == "today" ]; then
@@ -121,18 +130,11 @@ fi
 if [ $1 == "feierabend" ]; then
 	feierabend
 	exit 0
-fi
-
-if [ $1 == "--help" ] || [ $1 == "-h" ]; then
-	echo "y - the existential task manager"
-	echo "Usage: y -> show all tasks"
-	echo "       y do ([today][tomorrow][later]) Fix printer -> Create new task, defaults to 'today'."
-	echo "       y done Fix printer -> mark task as done"
-	echo "       y later -> take a look at your backlog"
-	exit 0
-fi
-#
-#else
-#	echo "Unrecognized option $1"
-#	exit 1
 #fi
+#
+#if [ $1 == "--help" ] || [ $1 == "-h" ]; then
+#	show_usage
+
+else
+	show_usage
+fi
