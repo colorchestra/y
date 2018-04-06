@@ -1,11 +1,7 @@
 #!/bin/bash
 
-#ALLARGS=$@
-#echo "ALLARGS ist" $ALLARGS
-#ALLARGS=${ cut -c 1-3 < $ALLARGS}
-#echo "ALLARGS ist jetzt" $ALLARGS
-#exit 0
-MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at u go" "yay")
+MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at u go" "nice work, yay")
+
 BASEDIR=~/y/
 TODAY=$(date --iso-8601)
 RED='\033[0;31m'
@@ -15,8 +11,6 @@ YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 
 print_tasks() {
-#	ls -lG --time-style=long-iso $BASEDIR/today
-#	echo -e ${GREEN}$(ls -1 $BASEDIR/today)${NC} #${GREEN}TODAY${NC}
 	cd $BASEDIR/today
 	for f in *; do
 		echo -e "${GREEN}Today:   ${NC} $f";
@@ -25,10 +19,16 @@ print_tasks() {
 
 	cd $BASEDIR/tomorrow
 	for f in *; do
-		echo -e ${BLUE}Tomorrow:${NC} $f;
+		echo -e "${BLUE}Tomorrow:${NC} $f";
 	done
 	cd $BASEDIR
-#	echo -e ${BLUE}$(ls -1 $BASEDIR/tomorrow) #${BLUE}TOMORROW${NC}
+
+	cd $BASEDIR/done
+	for f in *; do
+		echo -e "${YELLOW}Done:    ${NC} $f";
+	done
+	cd $BASEDIR
+
 }
 
 print_later() {
@@ -73,7 +73,7 @@ if [ $1 == "do" ]; then
        fi
 	touch $BASEDIR/$CURRENTDIR/$TASK
 	echo -e "'$TASK' added for ${GREEN}$CURRENTDIR!${NC}"
-	print_tasks
+#	print_tasks	# do we really want that?
 	exit 0
 fi
 
@@ -82,10 +82,10 @@ if [ $1 == "done" ]; then
 	mv $BASEDIR/$CURRENTDIR/$2 $BASEDIR/done/
 	printf \\n
 	echo "Done: $2."
-	MOTIVOUT=${MOTIVATION[$(shuf -i 0-3 -n 1)]}
+	MOTIVOUT=${MOTIVATION[$(shuf -i 0-4 -n 1)]}
 	echo -e ${YELLOW}$MOTIVOUT
 	printf \\n
-	print_tasks
+#	print_tasks		# not so sure bout dat
 	exit 0
 fi
 
@@ -94,6 +94,19 @@ if [ $1 == "later" ]; then
 	exit 0
 fi
 
+if [ $1 == "procrastinate" ]; then
+	echo "STILL IN THE WORKS"
+	exit 0
+fi
+
+if [ $1 == "--help" ] || [ $1 == "-h" ]; then
+	echo "y - the existential task manager"
+	echo "Usage: y -> show all tasks"
+	echo "       y do ([today][tomorrow][later]) Fix printer -> Create new task, defaults to 'today'."
+	echo "       y done Fix printer -> mark task as done"
+	echo "       y later -> take a look at your backlog"
+	exit 0
+fi
 #
 #else
 #	echo "Unrecognized option $1"
