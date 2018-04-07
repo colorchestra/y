@@ -10,6 +10,8 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+echo "number of args: $#"
+
 print_tasks() {
 	cd $BASEDIR/today
 	for f in *; do
@@ -41,12 +43,16 @@ print_later() {
 }
 
 print_motivation() {
-	MOTIVOUT=${MOTIVATION[$(shuf -i 0-6 -n 1)]}
+	MOTIVOUT=${MOTIVATION[$(shuf -i 0-${#MOTIVATION[@]} -n 1)]}
 	echo -e ${YELLOW}********************************
 	echo -e ${YELLOW}$MOTIVOUT
 	echo -e ${YELLOW}********************************
 	printf \\n
 }
+
+#print_demotivation() {
+#	DEMOTIVOUT="{DEMOTIVATION[$(shuf -i 
+#}
 
 feierabend() {
 	echo -e "${GREEN}here's what u did today"
