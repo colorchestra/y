@@ -1,12 +1,12 @@
 #!/bin/bash
 
 MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at u go" "nice work, yay" "u amazinggggggg" "u did good, kid")
+DEMOTIVATION=("u lazy piece of shit" "weeeell done *slow clap*" "son i am disappoint")
 
 BASEDIR=~/y
-TODAY=$(date --iso-8601)
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
+YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
@@ -25,7 +25,9 @@ print_tasks() {
 
 	cd $BASEDIR/done
 	for f in *; do
-		echo -e "${YELLOW}Done:    ${NC} $f";
+		if ! [[ -d $f ]]; then
+			echo -e "${YELLOW}Done:    ${NC} $f";
+		fi
 	done
 	cd $BASEDIR
 }
@@ -48,13 +50,18 @@ print_motivation() {
 
 feierabend() {
 	echo -e "${GREEN}here's what u did today"
-	printf \\n
-        cd $BASEDIR/done
+	printf \\n					# show all files from 'done'
+	cd $BASEDIR/done
         for f in *; do
-                echo -e "${YELLOW}Done:    ${NC} $f";
+		if ! [[ -d $f ]]; then
+                	echo -e "${YELLOW}Done:    ${NC} $f";
+		fi
         done
         cd $BASEDIR
 	print_motivation
+	TODAYSDATE=$(date --iso-8601)			# mv all files from 'done' to a separate directory 
+	find $BASEDIR/done/ -maxdepth 1 -type f -exec mv {} $BASEDIR/done/$TODAYSDATE \;
+	mv $BASEDIR/tomorrow/* $BASEDIR/today/
 	echo "Good night!"
 }
 
@@ -79,36 +86,36 @@ if [ $1 == "do" ]; then
 		exit 1
 	fi
 	if [ $2 == "today" ]; then
-		CURRENTDIR="today"
+		DAY="today"
 		TASK=$3
 	fi
 	if [ $2 == 'tomorrow' ]; then
-		CURRENTDIR="tomorrow"
+		DAY="tomorrow"
 		TASK=$3
 	fi
 	if [ $2 == 'later' ]; then
-		CURRENTDIR="later"
+		DAY="later"
 		TASK=$3
 	fi
 	if [ $2 != 'today' ] && [ $2 != 'tomorrow' ] && [ $2 != 'later' ]; then
-		CURRENTDIR="today"
+		DAY="today"
 		TASK=$2	
 	fi
-	if [ -e $BASEDIR/$CURRENTDIR/$TASK ]; then
+	if [ -e $BASEDIR/$DAY/$TASK ]; then
 	       echo "DEBUG: task exists, opening in editor."
-	       vi $BASEDIR/$CURRENTDIR/$TASK
+	       vi $BASEDIR/$DAY/$TASK
 	       print_tasks
 	       exit 0
        fi
-	touch $BASEDIR/$CURRENTDIR/$TASK
-	echo -e "'$TASK' added for ${GREEN}$CURRENTDIR!${NC}"
+	touch $BASEDIR/$DAY/$TASK
+	echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
 #	print_tasks	# do we really want that?
 	exit 0
 fi
 
 if [ $1 == "done" ]; then
-       CURRENTDIR="today"
-	mv $BASEDIR/$CURRENTDIR/$2 $BASEDIR/done/
+       DAY="today"
+	mv $BASEDIR/$DAY/$2 $BASEDIR/done/
 	printf \\n
 	echo "Done: $2."
 	printf \\n
@@ -123,7 +130,11 @@ if [ $1 == "later" ]; then
 fi
 
 if [ $1 == "procrastinate" ]; then
-	echo "STILL IN THE WORKS"
+	if [[ -e $BASEDIR/today/$2 ]]; then
+		mv $BASEDIR/today/$2 $BASEDIR/tomorrow/$2
+	fi
+	echo -e "'$2' procrastinated until ${GREEN}tomorrow."
+	echo -e "${RED}u lazy piece of shit${NC}"
 	exit 0
 fi
 
@@ -132,7 +143,7 @@ if [ $1 == "feierabend" ]; then
 	exit 0
 #fi
 #
-#if [ $1 == "--help" ] || [ $1 == "-h" ]; then
+#if [ $1 == "--help" ] || [ $1 == "-h" ]; then  # this is kinda unnecessary...
 #	show_usage
 
 else
