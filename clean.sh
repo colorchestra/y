@@ -1,9 +1,6 @@
 #!/bin/bash
 BASEDIR=~/y/
 
-rm -rf today/*
-rm -rf tomorrow/*
-rm -rf later/*
-rm -rf done/*
+for i in today tomorrow later done; do rm -rf $BASEDIR/$i/*; done
 
 exit 0
