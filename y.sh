@@ -80,72 +80,61 @@ if [ -z $1 ]; then	# if no arguments given, print all tasks today and tomorrow
 	exit 0
 fi
 
-if [ $1 == "do" ]; then
-	if [ -z $2 ]; then
+case "$1" in 
+	do)
+		case "$2" in
+			today|tomorrow|later)
+				DAY=$2
+				TASK=$3
+				;;
+			*)
+				DAY=today
+				TASK=$2
+				;;
+		esac
+		if [[ -e $BASEDIR/$DAY/$TASK ]]; then
+			echo "DEBUG: task exists, opening in editor"
+			vi $BASEDIR/$DAY/$TASK
+			exit 0
+		fi
+		touch $BASEDIR/$DAY/$TASK
+		echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
+		exit 0
+		;;
+	done)
+
+		if ! [[ -e $BASEDIR/today/$2 ]]; then
+			echo "No such task!"
+			exit 1
+		fi
+		mv $BASEDIR/today/$2 $BASEDIR/done/
+		printf \\n
+		echo "Done: $2."
+		printf \\n
+		print_motivation
+		exit 0
+		;;
+
+	procrastinate)
+		if [[ -e $BASEDIR/today/$2 ]]; then
+			mv $BASEDIR/today/$2 $BASEDIR/tomorrow/$2
+		else
+			show_usage
+		fi	
+		echo -e "'$2' procrastinated until ${BLUE}tomorrow.${NC}"
+		echo -e "${RED}u lazy piece of shit${NC}"
+		exit 0
+		;;
+	later)
+		print_later
+		exit 0
+		;;
+	feierabend)
+		feierabend
+		exit 0
+		;;
+	*)
 		show_usage
-		exit 1
-	fi
-	if [ $2 == "today" ]; then
-		DAY="today"
-		TASK=$3
-	fi
-	if [ $2 == 'tomorrow' ]; then
-		DAY="tomorrow"
-		TASK=$3
-	fi
-	if [ $2 == 'later' ]; then
-		DAY="later"
-		TASK=$3
-	fi
-	if [ $2 != 'today' ] && [ $2 != 'tomorrow' ] && [ $2 != 'later' ]; then
-		DAY="today"
-		TASK=$2	
-	fi
-	if [ -e $BASEDIR/$DAY/$TASK ]; then
-	       echo "DEBUG: task exists, opening in editor."
-	       vi $BASEDIR/$DAY/$TASK
-	       print_tasks
-	       exit 0
-       fi
-	touch $BASEDIR/$DAY/$TASK
-	echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
-#	print_tasks	# do we really want that?
-	exit 0
-fi
-
-if [ $1 == "done" ]; then
-       DAY="today"
-	mv $BASEDIR/$DAY/$2 $BASEDIR/done/
-	printf \\n
-	echo "Done: $2."
-	printf \\n
-	print_motivation
-#	print_tasks		# not so sure bout dat
-	exit 0
-fi
-
-if [ $1 == "later" ]; then
-	print_later
-	exit 0
-fi
-
-if [ $1 == "procrastinate" ]; then
-	if [[ -e $BASEDIR/today/$2 ]]; then
-		mv $BASEDIR/today/$2 $BASEDIR/tomorrow/$2
-	fi
-	echo -e "'$2' procrastinated until ${GREEN}tomorrow."
-	echo -e "${RED}u lazy piece of shit${NC}"
-	exit 0
-fi
-
-if [ $1 == "feierabend" ]; then
-	feierabend
-	exit 0
-#fi
-#
-#if [ $1 == "--help" ] || [ $1 == "-h" ]; then  # this is kinda unnecessary...
-#	show_usage
-
-else
-	show_usage
-fi
+		exit 0
+		;;
+esac
