@@ -10,7 +10,13 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo "number of args: $#"
+
+#echo "number of args: $#"
+#echo "${@: -1}"
+#echo $@
+#if [[ ${@: -1} == "!" ]]; then
+#	echo "neis"
+#fi
 
 print_tasks() {
 	cd $BASEDIR/today
@@ -72,7 +78,7 @@ feierabend() {
 }
 
 show_usage() {
-	echo "y - the existential task manager"
+	echo "y - the existentialist task manager"
 	echo "Usage: y -> show all tasks"
 	echo "       y do ([today][tomorrow][later]) Fix printer -> Create new task, defaults to 'today'."
 	echo "       y done Fix printer -> mark task as done"
@@ -89,45 +95,50 @@ fi
 case "$1" in 
 	do)
 		case "$2" in
-			today|tomorrow|later)
+			today|tomorrow|later)		# parse day
 				DAY=$2
-				TASK=$3
+				TASK=$(echo "$@" | cut -c${#2}- | cut -c6- ) 	# cut 'y do' and day
 				;;
 			*)
 				DAY=today
-				TASK=$2
+				TASK=$(echo "$@"| cut -c4-) 			# cut 'y do'
 				;;
 		esac
-		if [[ -e $BASEDIR/$DAY/$TASK ]]; then
+		if [[ -e $BASEDIR/$DAY/$TASK ]]; then	# open in editor if task already exists
 			echo "DEBUG: task exists, opening in editor"
-			vi $BASEDIR/$DAY/$TASK
+			vi $BASEDIR/$DAY/"$TASK"
 			exit 0
 		fi
-		touch $BASEDIR/$DAY/$TASK
+		if [[ ${@: -1} == "!" ]]; then		# mark tasks as important
+			TASK="${RED}!${NC}$TASK"
+			echo $TASK
+		fi
+		touch $BASEDIR/$DAY/"$TASK"		# create task
 		echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
 		exit 0
 		;;
 	done)
-
-		if ! [[ -e $BASEDIR/today/$2 ]]; then
+		TASK=$(echo "$@" | cut -c6-)
+		if ! [[ -e $BASEDIR/today/"$TASK" ]]; then
 			echo "No such task!"
 			exit 1
 		fi
-		mv $BASEDIR/today/$2 $BASEDIR/done/
+		mv $BASEDIR/today/"$TASK" $BASEDIR/done/
 		printf \\n
-		echo "Done: $2."
+		echo "Done: $TASK."
 		printf \\n
 		print_motivation
 		exit 0
 		;;
 
 	procrastinate)
-		if [[ -e $BASEDIR/today/$2 ]]; then
-			mv $BASEDIR/today/$2 $BASEDIR/tomorrow/$2
+		TASK=$(echo "$@" | cut -c15-)
+		if [[ -e $BASEDIR/today/"$TASK" ]]; then
+			mv $BASEDIR/today/"$TASK" $BASEDIR/tomorrow/"$TASK"
 		else
 			show_usage
 		fi	
-		echo -e "'$2' procrastinated until ${BLUE}tomorrow.${NC}"
+		echo -e "'$TASK' procrastinated until ${BLUE}tomorrow.${NC}"
 		echo -e "${RED}u lazy piece of shit${NC}"
 		exit 0
 		;;
@@ -137,6 +148,11 @@ case "$1" in
 		;;
 	feierabend)
 		feierabend
+		exit 0
+		;;
+	clean)
+		$BASEDIR/clean.sh
+		echo "All entries deleted."
 		exit 0
 		;;
 	*)
