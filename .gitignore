@@ -1,8 +1,5 @@
 # data directories
-today/*
-tomorrow/*
-later/*
-done/*
+data/*
 
 # swap file
 *.swp

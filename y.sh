@@ -3,7 +3,10 @@
 MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at u go" "nice work, yay" "u amazinggggggg" "u did good, kid")
 DEMOTIVATION=("u lazy piece of shit" "weeeell done *slow clap*" "son i am disappoint")
 
+GIT_REMOTE=
 BASEDIR=~/y
+DATADIR=$BASEDIR/data
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -19,40 +22,40 @@ NC='\033[0m' # No Color
 #fi
 
 print_tasks() {
-	cd $BASEDIR/today
+	cd $DATADIR/today
 	for f in *; do
 		echo -e "${GREEN}Today:   ${NC} $f";
 	done
-	cd $BASEDIR
+	cd $DATADIR
 
-	cd $BASEDIR/tomorrow
+	cd $DATADIR/tomorrow
 	for f in *; do
 		echo -e "${BLUE}Tomorrow:${NC} $f";
 	done
-	cd $BASEDIR
+	cd $DATADIR
 
-	cd $BASEDIR/done
+	cd $DATADIR/done
 	for f in *; do
 		if ! [[ -d $f ]]; then
 			echo -e "${YELLOW}Done:    ${NC} $f";
 		fi
 	done
-	cd $BASEDIR
+	cd $DATADIR
 }
 
 print_later() {
-	cd $BASEDIR/later
+	cd $DATADIR/later
 	for f in *; do
 		echo -e ${RED}Later:${NC} $f;
 	done
-	cd $BASEDIR
+	cd $DATADIR
 }
 
 print_motivation() {
 	MOTIVOUT=${MOTIVATION[$(shuf -i 0-${#MOTIVATION[@]} -n 1)]}
 	echo -e ${YELLOW}********************************
 	echo -e ${YELLOW}$MOTIVOUT
-	echo -e ${YELLOW}********************************
+	echo -e ${YELLOW}********************************${NC}
 	printf \\n
 }
 
@@ -61,19 +64,24 @@ print_motivation() {
 #}
 
 feierabend() {
-	echo -e "${GREEN}here's what u did today"
+	echo -e "${GREEN}here's what u did today${NC}"
 	printf \\n					# show all files from 'done'
-	cd $BASEDIR/done
+	cd $DATADIR/done
         for f in *; do
 		if ! [[ -d $f ]]; then
                 	echo -e "${YELLOW}Done:    ${NC} $f";
 		fi
         done
-        cd $BASEDIR
+        cd $DATADIR
 	print_motivation
 	TODAYSDATE=$(date --iso-8601)			# mv all files from 'done' to a separate directory 
-	find $BASEDIR/done/ -maxdepth 1 -type f -exec mv {} $BASEDIR/done/$TODAYSDATE \;
-	mv $BASEDIR/tomorrow/* $BASEDIR/today/
+	find $DATADIR/done/ -maxdepth 1 -type f -exec mv {} $DATADIR/done/$TODAYSDATE \;
+	mv $DATADIR/tomorrow/* $DATADIR/today/
+	git add --all
+	git commit -m "Feierabend $TODAYSDATE"
+	if [[ $GIT_REMOTE ]]; then
+		git push origin master
+	fi
 	echo "Good night!"
 }
 
@@ -104,26 +112,26 @@ case "$1" in
 				TASK=$(echo "$@"| cut -c4-) 			# cut 'y do'
 				;;
 		esac
-		if [[ -e $BASEDIR/$DAY/$TASK ]]; then	# open in editor if task already exists
+		if [[ -e $DATADIR/$DAY/$TASK ]]; then	# open in editor if task already exists
 			echo "DEBUG: task exists, opening in editor"
-			vi $BASEDIR/$DAY/"$TASK"
+			vi $DATADIR/$DAY/"$TASK"
 			exit 0
 		fi
 		if [[ ${@: -1} == "!" ]]; then		# mark tasks as important
 			TASK="${RED}!${NC}$TASK"
 			echo $TASK
 		fi
-		touch $BASEDIR/$DAY/"$TASK"		# create task
+		touch $DATADIR/$DAY/"$TASK"		# create task
 		echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
 		exit 0
 		;;
 	done)
 		TASK=$(echo "$@" | cut -c6-)
-		if ! [[ -e $BASEDIR/today/"$TASK" ]]; then
+		if ! [[ -e $DATADIR/today/"$TASK" ]]; then
 			echo "No such task!"
 			exit 1
 		fi
-		mv $BASEDIR/today/"$TASK" $BASEDIR/done/
+		mv $DATADIR/today/"$TASK" $DATADIR/done/
 		printf \\n
 		echo "Done: $TASK."
 		printf \\n
@@ -133,8 +141,8 @@ case "$1" in
 
 	procrastinate)
 		TASK=$(echo "$@" | cut -c15-)
-		if [[ -e $BASEDIR/today/"$TASK" ]]; then
-			mv $BASEDIR/today/"$TASK" $BASEDIR/tomorrow/"$TASK"
+		if [[ -e $DATADIR/today/"$TASK" ]]; then
+			mv $DATADIR/today/"$TASK" $DATADIR/tomorrow/"$TASK"
 		else
 			show_usage
 		fi	
