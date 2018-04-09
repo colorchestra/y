@@ -3,7 +3,7 @@
 MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at u go" "nice work, yay" "u amazinggggggg" "u did good, kid")
 DEMOTIVATION=("u lazy piece of shit" "weeeell done *slow clap*" "son i am disappoint")
 
-GIT_REMOTE=
+GIT_REMOTE="git@vcs.meso.net:shah/y-tasks.git"
 BASEDIR=~/y
 DATADIR=$BASEDIR/data
 
@@ -79,9 +79,9 @@ feierabend() {
 	mv $DATADIR/tomorrow/* $DATADIR/today/
 	git add --all
 	git commit -m "Feierabend $TODAYSDATE"
-	if [[ $GIT_REMOTE ]]; then
+#	if [[ $GIT_REMOTE ]]; then
 		git push origin master
-	fi
+#	fi
 	echo "Good night!"
 }
 
