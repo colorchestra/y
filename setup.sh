@@ -5,9 +5,6 @@ DATADIR=$BASEDIR/data/
 
 echo "Creating data directory..."
 mkdir $DATADIR
-cd $DATADIR
-git init
-cd $BASEDIR
 
 echo "Creating daily directories..."
 for d in today tomorrow later done; do
@@ -23,3 +20,14 @@ echo "Writing new aliases to .bashrc..."
 echo "alias y='$BASEDIR/y.sh'" >> ~/.bashrc
 
 echo "Done."
+
+read -p "Do you have an existing 'data' directory, e.g. in a Git repo? (yes/no)" yn
+case $yn in
+	[Yy]* ) echo "Please manually copy your data directory now."		# to do: automatically clone if repo link is inserted
+		exit 0
+		;;
+
+	* ) cd $DATADIR
+	git init
+	exit 0
+	;;

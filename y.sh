@@ -77,7 +77,8 @@ feierabend() {
 	COMMITMESSAGE="Feierabend $(date '+%F %T')"
 	LASTCOMMIT=$(git log --format=%s%b -n 1 -1)
 	git commit -m "$COMMITMESSAGE" >> $BASEDIR/git.log
-	if [[ git remote show ]]; then
+#	if ! [[ -z git remote show ]]; then
+	if [[ $(git remote show) ]]; then
 		git push >> $BASEDIR/git.log
 	fi
 	echo "Good night!"
