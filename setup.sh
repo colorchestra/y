@@ -5,6 +5,9 @@ DATADIR=$BASEDIR/data/
 
 echo "Creating data directory..."
 mkdir $DATADIR
+cd $DATADIR
+git init
+cd $BASEDIR
 
 echo "Creating daily directories..."
 for d in today tomorrow later done; do

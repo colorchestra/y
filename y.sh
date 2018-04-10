@@ -70,27 +70,16 @@ feierabend() {
         done
         cd $DATADIR
 	print_motivation
-#	find $DATADIR/done/ -maxdepth 1 -type f -exec mv {} $DATADIR/done/$TODAYSDATE \;
 	if [[ -e $DATADIR/tomorrow/* ]]; then
 		mv $DATADIR/tomorrow/* $DATADIR/today/
 	fi
-#	if [[ -e $DATADIR/done/$TODAYSDATE ]]; then
-#		git add $DATADIR/done/$TODAYSDATE/*
-#	fi
 	git add --all >> $BASEDIR/git.log
 	COMMITMESSAGE="Feierabend $(date '+%F %T')"
 	LASTCOMMIT=$(git log --format=%s%b -n 1 -1)
-#	if [[ $COMMITMESSAGE == *$LASTCOMMIT* ]]; then
-#		while [[ $LASTCOMMIT == *$COMMITMESSAGE* ]]; do 	# if there already has been a commit today...
-#			COUNTER=$[COUNTER + 1]
-#			echo "DEBUG: there has already been a commit today. Trying next possible commit message..."
-#			COMMITMESSAGE="Feierabend $TODAYSDATE - $COUNTER"
-#		done
-#	fi
 	git commit -m "$COMMITMESSAGE" >> $BASEDIR/git.log
-#	if [[ $(git remote show) ]]; then
-#		git push origin master >> $BASEDIR/git.log
-#	fi
+	if [[ git remote show ]]; then
+		git push >> $BASEDIR/git.log
+	fi
 	echo "Good night!"
 }
 
