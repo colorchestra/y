@@ -3,7 +3,6 @@
 MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at u go" "nice work, yay" "u amazinggggggg" "u did good, kid")
 DEMOTIVATION=("u lazy piece of shit" "weeeell done *slow clap*" "son i am disappoint")
 
-GIT_REMOTE="git@vcs.meso.net:shah/y-tasks.git"
 BASEDIR=~/y
 DATADIR=$BASEDIR/data
 
@@ -12,14 +11,6 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
-
-
-#echo "number of args: $#"
-#echo "${@: -1}"
-#echo $@
-#if [[ ${@: -1} == "!" ]]; then
-#	echo "neis"
-#fi
 
 print_tasks() {
 	cd $DATADIR/today
@@ -67,20 +58,38 @@ feierabend() {
 	echo -e "${GREEN}here's what u did today${NC}"
 	printf \\n					# show all files from 'done'
 	cd $DATADIR/done
+	TODAYSDATE=$(date --iso-8601)
+	if [[ ! -d $TODAYSDATE ]]; then
+		mkdir $TODAYSDATE
+	fi	
         for f in *; do
 		if ! [[ -d $f ]]; then
                 	echo -e "${YELLOW}Done:    ${NC} $f";
+			mv "$f" $TODAYSDATE
 		fi
         done
         cd $DATADIR
 	print_motivation
-	TODAYSDATE=$(date --iso-8601)			# mv all files from 'done' to a separate directory 
-	find $DATADIR/done/ -maxdepth 1 -type f -exec mv {} $DATADIR/done/$TODAYSDATE \;
-	mv $DATADIR/tomorrow/* $DATADIR/today/
-	git add --all
-	git commit -m "Feierabend $TODAYSDATE"
-#	if [[ $GIT_REMOTE ]]; then
-		git push origin master
+#	find $DATADIR/done/ -maxdepth 1 -type f -exec mv {} $DATADIR/done/$TODAYSDATE \;
+	if [[ -e $DATADIR/tomorrow/* ]]; then
+		mv $DATADIR/tomorrow/* $DATADIR/today/
+	fi
+#	if [[ -e $DATADIR/done/$TODAYSDATE ]]; then
+#		git add $DATADIR/done/$TODAYSDATE/*
+#	fi
+	git add --all >> $BASEDIR/git.log
+	COMMITMESSAGE="Feierabend $(date '+%F %T')"
+	LASTCOMMIT=$(git log --format=%s%b -n 1 -1)
+#	if [[ $COMMITMESSAGE == *$LASTCOMMIT* ]]; then
+#		while [[ $LASTCOMMIT == *$COMMITMESSAGE* ]]; do 	# if there already has been a commit today...
+#			COUNTER=$[COUNTER + 1]
+#			echo "DEBUG: there has already been a commit today. Trying next possible commit message..."
+#			COMMITMESSAGE="Feierabend $TODAYSDATE - $COUNTER"
+#		done
+#	fi
+	git commit -m "$COMMITMESSAGE" >> $BASEDIR/git.log
+#	if [[ $(git remote show) ]]; then
+#		git push origin master >> $BASEDIR/git.log
 #	fi
 	echo "Good night!"
 }
@@ -118,8 +127,8 @@ case "$1" in
 			exit 0
 		fi
 		if [[ ${@: -1} == "!" ]]; then		# mark tasks as important
-			TASK="${RED}!${NC}$TASK"
-			echo $TASK
+			TASK="${RED}!${NC} $TASK"
+			TASK=$(echo $TASK | rev | cut -c2- | rev)
 		fi
 		touch $DATADIR/$DAY/"$TASK"		# create task
 		echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
@@ -160,10 +169,21 @@ case "$1" in
 		;;
 	clean)
 		$BASEDIR/clean.sh
-		echo "All entries deleted."
 		exit 0
 		;;
-	*)
+	socke)
+		cd $DATADIR/today/
+		rm $2
+		echo "harharhar"
+		exit 0
+		;;
+
+	--help|-h)
+		show_usage
+		exit 0
+		;;
+
+	*)	echo "Not a valid command."
 		show_usage
 		exit 0
 		;;
