@@ -9,13 +9,17 @@ DATADIR=$BASEDIR/data
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
+BLUE='\033[1;34m'
 NC='\033[0m' # No Color
 
 print_tasks() {
 	cd $DATADIR/today
 	for f in *; do
-		echo -e "${GREEN}Today:   ${NC} $f";
+		if [[ $f == "! "* ]]; then
+			echo -e "${GREEN}Today:  ${RED}!${NC}$(echo $f | cut -c2-)";
+		else
+			echo -e "${GREEN}Today:   ${NC} $f";
+		fi
 	done
 	cd $DATADIR
 
@@ -43,34 +47,45 @@ print_later() {
 }
 
 print_motivation() {
-	MOTIVOUT=${MOTIVATION[$(shuf -i 0-${#MOTIVATION[@]} -n 1)]}
+	MOTIVOUT=${MOTIVATION[$(shuf -i 0-$((${#MOTIVATION[@]}-1)) -n 1)]}
 	echo -e ${YELLOW}********************************
 	echo -e ${YELLOW}$MOTIVOUT
 	echo -e ${YELLOW}********************************${NC}
 	printf \\n
 }
 
-#print_demotivation() {
-#	DEMOTIVOUT="{DEMOTIVATION[$(shuf -i 
-#}
+print_demotivation() {
+	DEMOTIVOUT=${DEMOTIVATION[$(shuf -i 0-$((${#DEMOTIVATION[@]}-1)) -n 1)]}
+	echo -e ${RED}********************************
+	echo -e ${RED}$DEMOTIVOUT
+	echo -e ${RED}********************************${NC}
+	printf \\n
+
+}
 
 feierabend() {
-	echo -e "${GREEN}here's what u did today${NC}"
-	printf \\n					# show all files from 'done'
 	cd $DATADIR/done
 	TODAYSDATE=$(date --iso-8601)
 	if [[ ! -d $TODAYSDATE ]]; then
 		mkdir $TODAYSDATE
 	fi	
-        for f in *; do
-		if ! [[ -d $f ]]; then
-                	echo -e "${YELLOW}Done:    ${NC} $f";
-			mv "$f" $TODAYSDATE
-		fi
-        done
+	if [[ ! -f * ]]; then
+		echo "u did absolutely nothing today."  
+		printf \\n
+		print_demotivation
+	else
+		echo -e "${GREEN}here's what u did today${NC}"
+		printf \\n					# show all files from 'done'
+        	for f in *; do
+			if ! [[ -d $f ]]; then
+                		echo -e "${YELLOW}Done:    ${NC} $f";
+				mv "$f" $TODAYSDATE
+			fi
+        	done
+		print_motivation
+	fi
         cd $DATADIR
-	print_motivation
-	if [[ -e $DATADIR/tomorrow/* ]]; then
+	if [[ ! -z "$(ls -A $DATADIR/tomorrow)" ]]; then  # why did i do this? necessary for anything?
 		mv $DATADIR/tomorrow/* $DATADIR/today/
 	fi
 	git add --all >> $BASEDIR/git.log
@@ -116,10 +131,10 @@ case "$1" in
 			vi $DATADIR/$DAY/"$TASK"
 			exit 0
 		fi
-		if [[ ${@: -1} == "!" ]]; then		# mark tasks as important
-			TASK="${RED}!${NC} $TASK"
-			TASK=$(echo $TASK | rev | cut -c2- | rev)
-		fi
+#		if [[ ${@: -1} == "!" ]]; then		# mark tasks as important
+#			TASK="${RED}!${NC} $TASK"
+#			TASK=$(echo $TASK | rev | cut -c2- | rev)
+#		fi
 		touch $DATADIR/$DAY/"$TASK"		# create task
 		echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
 		exit 0
@@ -161,9 +176,9 @@ case "$1" in
 		$BASEDIR/clean.sh
 		exit 0
 		;;
-	socke)
+	vanish)				# unfinished - do not use
 		cd $DATADIR/today/
-		rm $2
+		rm "$@"
 		echo "harharhar"
 		exit 0
 		;;
