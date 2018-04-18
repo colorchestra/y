@@ -48,6 +48,7 @@ print_later() {
 
 print_motivation() {
 	MOTIVOUT=${MOTIVATION[$(shuf -i 0-$((${#MOTIVATION[@]}-1)) -n 1)]}
+	printf \\n
 	echo -e ${YELLOW}********************************
 	echo -e ${YELLOW}$MOTIVOUT
 	echo -e ${YELLOW}********************************${NC}
@@ -56,6 +57,7 @@ print_motivation() {
 
 print_demotivation() {
 	DEMOTIVOUT=${DEMOTIVATION[$(shuf -i 0-$((${#DEMOTIVATION[@]}-1)) -n 1)]}
+	printf \\n
 	echo -e ${RED}********************************
 	echo -e ${RED}$DEMOTIVOUT
 	echo -e ${RED}********************************${NC}
@@ -69,7 +71,7 @@ feierabend() {
 	if [[ ! -d $TODAYSDATE ]]; then
 		mkdir $TODAYSDATE
 	fi	
-	if [[ ! -f * ]]; then
+	if [[ ! $(find . -maxdepth 1 -type f) ]]; then
 		echo "u did absolutely nothing today."  
 		printf \\n
 		print_demotivation
@@ -85,17 +87,19 @@ feierabend() {
 		print_motivation
 	fi
         cd $DATADIR
-	if [[ ! -z "$(ls -A $DATADIR/tomorrow)" ]]; then  # why did i do this? necessary for anything?
+	if [[ ! -z "$(ls -A $DATADIR/tomorrow)" ]]; then
 		mv $DATADIR/tomorrow/* $DATADIR/today/
 	fi
-	git add --all >> $BASEDIR/git.log
 	COMMITMESSAGE="Feierabend $(date '+%F %T')"
-	LASTCOMMIT=$(git log --format=%s%b -n 1 -1)
+	echo "======== Begin Git log for commit '$COMMITMESSAGE' ========" >> $BASEDIR/git.log
+	git add --all >> $BASEDIR/git.log
+#	LASTCOMMIT=$(git log --format=%s%b -n 1 -1)
 	git commit -m "$COMMITMESSAGE" >> $BASEDIR/git.log
 #	if ! [[ -z git remote show ]]; then
 	if [[ $(git remote show) ]]; then
 		git push >> $BASEDIR/git.log
 	fi
+	echo "======== End Git log for commit '$COMMITMESSAGE' ========" >> $BASEDIR/git.log
 	echo "Good night!"
 }
 
@@ -161,7 +165,7 @@ case "$1" in
 			show_usage
 		fi	
 		echo -e "'$TASK' procrastinated until ${BLUE}tomorrow.${NC}"
-		echo -e "${RED}u lazy piece of shit${NC}"
+		print_demotivation
 		exit 0
 		;;
 	later)
