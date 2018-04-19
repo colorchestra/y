@@ -16,10 +16,14 @@ print_tasks() {
 	cd $DATADIR/today
 	for f in *; do
 		if [[ $f == "! "* ]]; then
-			echo -e "${GREEN}Today:  ${RED}!${NC}$(echo $f | cut -c2-)";
+			OUTPUTSTRING=$(echo -e "${GREEN}Today:  ${RED}!${NC}$(echo $f | cut -c2-)");
 		else
-			echo -e "${GREEN}Today:   ${NC} $f";
+			OUTPUTSTRING=$(echo -e "${GREEN}Today:   ${NC} $f");
 		fi
+		if [[ -s $f ]]; then
+			OUTPUTSTRING=$(echo -e "$OUTPUTSTRING *")
+		fi
+		echo -e "$OUTPUTSTRING"
 	done
 	cd $DATADIR
 
