@@ -110,13 +110,12 @@ feierabend() {
 }
 
 procrastinate() {
-
 	if [[ -e $DATADIR/today/"$TASK" ]]; then
-		mv $DATADIR/today/"$TASK" $DATADIR/tomorrow/"$TASK"
+		mv $DATADIR/today/"$TASK" $DATADIR/$1/"$TASK"
 	else
 		show_usage
 	fi	
-	echo -e "'$TASK' procrastinated until ${BLUE}tomorrow.${NC}"
+	echo -e "'$TASK' procrastinated until ${BLUE}$1.${NC}"
 	print_demotivation
 	exit 0
 
@@ -126,6 +125,9 @@ show_usage() {
 	echo "Usage: y -> show all tasks"
 	echo "       y do ([today][tomorrow][later]) Fix printer -> Create new task, defaults to 'today'."
 	echo "       y done Fix printer -> mark task as done"
+	echo "       y do (if task already exists) -> open task in Vim to add notes"
+	echo "       y procrastinate Fix printer -> move task to tomorrow"
+	echo "       y superprocrastinate Fix printer -> move task to backlog"
 	echo "       y later -> take a look at your backlog"
 	echo "       y feierabend -> done for the day"
 	exit 0
@@ -153,7 +155,7 @@ case "$1" in
 			vi $DATADIR/$DAY/"$TASK"
 			exit 0
 		fi
-		if [[ $DAY == "today" ]] && [[ -e $DATADIR/later/$TASK ]]; then
+		if [[ $DAY == "today" ]] && [[ -e $DATADIR/later/$TASK ]]; then  # if tasks exists in later, move to today
 			echo "Task exists in backlog - moving it to today"
 			mv $DATADIR/later/$TASK $DATADIR/today/$TASK
 		fi
@@ -170,22 +172,17 @@ case "$1" in
 		mv $DATADIR/today/"$TASK" $DATADIR/done/
 		printf \\n
 		echo "Done: $TASK."
-		printf \\n
 		print_motivation
-		exit 0
 		;;
 
 	procrastinate)
-#		TASK=$(echo "$@" | cut -c15-)
-#		if [[ -e $DATADIR/today/"$TASK" ]]; then
-#			mv $DATADIR/today/"$TASK" $DATADIR/tomorrow/"$TASK"
-#		else
-#			show_usage
-#		fi	
-#		echo -e "'$TASK' procrastinated until ${BLUE}tomorrow.${NC}"
-#		print_demotivation
 		TASK=$(echo "$@" | cut -c15-)
-		procrastinate
+		procrastinate "tomorrow"
+		exit 0
+		;;
+	superprocrastinate)
+		TASK=$(echo "$@" | cut -c20-)
+		procrastinate later
 		exit 0
 		;;
 	later)
