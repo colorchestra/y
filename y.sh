@@ -1,7 +1,7 @@
 #!/bin/bash
 
-MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at u go" "nice work, yay" "u amazinggggggg" "u did good, kid")
-DEMOTIVATION=("u lazy piece of shit" "weeeell done *slow clap*" "son i am disappoint")
+MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at u go" "nice work, yay" "u amazinggggggg" "u did good, kid" "this shit is bananas, B-A-N-A-N-A-S!" "the best there ever was" "u the real mvp")
+DEMOTIVATION=("u lazy piece of shit" "weeeell done *slow clap*" "son i am disappoint" "lauch")
 
 BASEDIR=~/y
 DATADIR=$BASEDIR/data
@@ -97,16 +97,30 @@ feierabend() {
 	COMMITMESSAGE="Feierabend $(date '+%F %T')"
 	echo "======== Begin Git log for commit '$COMMITMESSAGE' ========" >> $BASEDIR/git.log
 	git add --all >> $BASEDIR/git.log
-#	LASTCOMMIT=$(git log --format=%s%b -n 1 -1)
+	echo "+ git commit"
 	git commit -m "$COMMITMESSAGE" >> $BASEDIR/git.log
-#	if ! [[ -z git remote show ]]; then
 	if [[ $(git remote show) ]]; then
+		echo "+ git push"
 		git push >> $BASEDIR/git.log
 	fi
 	echo "======== End Git log for commit '$COMMITMESSAGE' ========" >> $BASEDIR/git.log
+	printf \\n
+	echo "Remember to stop tracking your time"
 	echo "Good night!"
 }
 
+procrastinate() {
+
+	if [[ -e $DATADIR/today/"$TASK" ]]; then
+		mv $DATADIR/today/"$TASK" $DATADIR/tomorrow/"$TASK"
+	else
+		show_usage
+	fi	
+	echo -e "'$TASK' procrastinated until ${BLUE}tomorrow.${NC}"
+	print_demotivation
+	exit 0
+
+}
 show_usage() {
 	echo "y - the existentialist task manager"
 	echo "Usage: y -> show all tasks"
@@ -139,10 +153,10 @@ case "$1" in
 			vi $DATADIR/$DAY/"$TASK"
 			exit 0
 		fi
-#		if [[ ${@: -1} == "!" ]]; then		# mark tasks as important
-#			TASK="${RED}!${NC} $TASK"
-#			TASK=$(echo $TASK | rev | cut -c2- | rev)
-#		fi
+		if [[ $DAY == "today" ]] && [[ -e $DATADIR/later/$TASK ]]; then
+			echo "Task exists in backlog - moving it to today"
+			mv $DATADIR/later/$TASK $DATADIR/today/$TASK
+		fi
 		touch $DATADIR/$DAY/"$TASK"		# create task
 		echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
 		exit 0
@@ -162,14 +176,16 @@ case "$1" in
 		;;
 
 	procrastinate)
+#		TASK=$(echo "$@" | cut -c15-)
+#		if [[ -e $DATADIR/today/"$TASK" ]]; then
+#			mv $DATADIR/today/"$TASK" $DATADIR/tomorrow/"$TASK"
+#		else
+#			show_usage
+#		fi	
+#		echo -e "'$TASK' procrastinated until ${BLUE}tomorrow.${NC}"
+#		print_demotivation
 		TASK=$(echo "$@" | cut -c15-)
-		if [[ -e $DATADIR/today/"$TASK" ]]; then
-			mv $DATADIR/today/"$TASK" $DATADIR/tomorrow/"$TASK"
-		else
-			show_usage
-		fi	
-		echo -e "'$TASK' procrastinated until ${BLUE}tomorrow.${NC}"
-		print_demotivation
+		procrastinate
 		exit 0
 		;;
 	later)
