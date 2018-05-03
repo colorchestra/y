@@ -12,35 +12,56 @@ YELLOW='\033[1;33m'
 BLUE='\033[1;34m'
 NC='\033[0m' # No Color
 
+#print_tasks() {
+#	cd $DATADIR/today
+#	for f in *; do
+#		if [[ $f == "! "* ]]; then
+#			OUTPUTSTRING=$(echo -e "${GREEN}Today:  ${RED}!${NC}$(echo $f | cut -c2-)");
+#		else
+#			OUTPUTSTRING=$(echo -e "${GREEN}Today:   ${NC} $f");
+#		fi
+#		if [[ -s $f ]]; then
+#			OUTPUTSTRING=$(echo -e "$OUTPUTSTRING *")
+#		fi
+#		echo -e "$OUTPUTSTRING"
+#	done
+#	cd $DATADIR
+#
+#	cd $DATADIR/tomorrow
+#	for f in *; do
+#		echo -e "${BLUE}Tomorrow:${NC} $f";
+#	done
+#	cd $DATADIR
+#
+#	cd $DATADIR/done
+#	for f in *; do
+#		if ! [[ -d $f ]]; then
+#			echo -e "${YELLOW}Done:    ${NC} $f";
+#		fi
+#	done
+#	cd $DATADIR
+#}
 print_tasks() {
-	cd $DATADIR/today
+	cd $DATADIR/$1
 	for f in *; do
+#		SPACES=$(printf "%16s\n" "$1")
 		if [[ $f == "! "* ]]; then
-			OUTPUTSTRING=$(echo -e "${GREEN}Today:  ${RED}!${NC}$(echo $f | cut -c2-)");
+#			OUTPUTSTRING=$(echo -e "$3$2:  ${RED}!${NC}$(echo $f | cut -c2-)");
+			OUTPUTSTRING=$(echo -e "$3$2:  ${RED}!${NC}$(echo $f | cut -c2-)");
 		else
-			OUTPUTSTRING=$(echo -e "${GREEN}Today:   ${NC} $f");
+			OUTPUTSTRING=$(echo -e "$3$2:   ${NC} $f");
 		fi
 		if [[ -s $f ]]; then
 			OUTPUTSTRING=$(echo -e "$OUTPUTSTRING *")
 		fi
 		echo -e "$OUTPUTSTRING"
+#		printf "%12s %s\n" $2 "$OUTPUTSTRING"
+		OUTPUTSTRING=""
 	done
-	cd $DATADIR
-
-	cd $DATADIR/tomorrow
-	for f in *; do
-		echo -e "${BLUE}Tomorrow:${NC} $f";
-	done
-	cd $DATADIR
-
-	cd $DATADIR/done
-	for f in *; do
-		if ! [[ -d $f ]]; then
-			echo -e "${YELLOW}Done:    ${NC} $f";
-		fi
-	done
-	cd $DATADIR
 }
+
+
+
 
 print_later() {
 	cd $DATADIR/later
@@ -112,6 +133,8 @@ feierabend() {
 procrastinate() {
 	if [[ -e $DATADIR/today/"$TASK" ]]; then
 		mv $DATADIR/today/"$TASK" $DATADIR/$1/"$TASK"
+	elif [[ -e $DATADIR/tomorrow/"$TASK" ]] && [[ $1 == "later" ]]; then
+		mv $DATADIR/tomorrow/"$TASK" $DATADIR/later/"$TASK"
 	else
 		show_usage
 	fi	
@@ -134,7 +157,11 @@ show_usage() {
 }
 
 if [ -z $1 ]; then	# if no arguments given, print all tasks today and tomorrow
-	print_tasks
+#	print_tasks	# old
+# use the following syntax: directory name, day in "readable case" and name of color variable
+	print_tasks today Today $GREEN
+	print_tasks tomorrow Tomorrow $BLUE
+#	print_tasks later Later $RED 	# in case one wants that...
 	exit 0
 fi
 
@@ -157,7 +184,7 @@ case "$1" in
 		fi
 		if [[ $DAY == "today" ]] && [[ -e $DATADIR/later/$TASK ]]; then  # if tasks exists in later, move to today
 			echo "Task exists in backlog - moving it to today"
-			mv $DATADIR/later/$TASK $DATADIR/today/$TASK
+			mv $DATADIR/later/"$TASK" $DATADIR/today/"$TASK"
 		fi
 		touch $DATADIR/$DAY/"$TASK"		# create task
 		echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
@@ -177,7 +204,7 @@ case "$1" in
 
 	procrastinate)
 		TASK=$(echo "$@" | cut -c15-)
-		procrastinate "tomorrow"
+		procrastinate tomorrow
 		exit 0
 		;;
 	superprocrastinate)
@@ -186,7 +213,8 @@ case "$1" in
 		exit 0
 		;;
 	later)
-		print_later
+#		print_later
+		print_tasks later Later $RED
 		exit 0
 		;;
 	feierabend)
