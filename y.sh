@@ -133,9 +133,9 @@ procrastinate() {
 show_usage() {
 	echo "y - the existentialist task manager"
 	echo "Usage: y -> show all tasks"
-	echo "       y do ([today][tomorrow][later]) Fix printer -> Create new task, defaults to 'today'."
+	echo "       y do (today|tomorrow|later]) Fix printer -> Create new task, defaults to 'today'."
 	echo "       y done Fix printer -> mark task as done"
-	echo "       y do (if task already exists) -> open task in Vim to add notes"
+	echo "       y do Fix printer (if task already exists) -> open task in Vim to add notes"
 	echo "       y procrastinate Fix printer -> move task to tomorrow"
 	echo "       y superprocrastinate Fix printer -> move task to backlog"
 	echo "       y later -> take a look at your backlog"
@@ -165,10 +165,12 @@ case "$1" in
 			vi $DATADIR/$DAY/"$TASK"
 			exit 0
 		fi
-		if [[ $DAY == "today" ]] && [[ -e $DATADIR/later/$TASK ]]; then  # if tasks exists in later, move to today
-			echo "Task exists in backlog - moving it to today"
-			mv $DATADIR/later/$TASK $DATADIR/today/$TASK
-		fi
+		for SOURCEDAY in "tomorrow" "later"; do
+			if [[ $DAY == "today" ]] && [[ -e $DATADIR/$SOURCEDAY/"$TASK" ]]; then  # if tasks exists in tomorrow or later, move to today
+				echo "Task exists in $SOURCEDAY - moving it to today"
+				mv $DATADIR/$SOURCEDAY/"$TASK" $DATADIR/today/"$TASK"
+			fi
+		done
 		touch $DATADIR/$DAY/"$TASK"		# create task
 		echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
 		exit 0
