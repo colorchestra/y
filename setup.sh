@@ -7,7 +7,7 @@ echo "Creating data directory..."
 mkdir $DATADIR
 
 echo "Creating daily directories..."
-for d in today tomorrow later done; do
+for d in today tomorrow later done archive; do
 	if ! [[ -e $DATADIR/$d ]]; then
 		mkdir $DATADIR/$d
 	fi

@@ -16,14 +16,16 @@ print_tasks() {
 	cd $DATADIR/$1
 	for f in *; do
 		NAME=$f
-		if [[ $NAME == "! "* ]]; then
-			NAME=$(echo $NAME | cut -c3-)
-			OUTPUTSTRING=$(printf "%s%-10s${RED}! ${NC}%s\n" "$3" "$2" "$NAME")
-		else
-			OUTPUTSTRING=$(printf "%s%-12s${NC}%s\n" "$3" "$2" "$NAME")
-		fi
-		if [[ -s $f ]]; then
-			OUTPUTSTRING=$(echo -e "$OUTPUTSTRING *")
+		if [[ ! -d $f ]]; then
+			if [[ $NAME == "! "* ]]; then
+				NAME=$(echo $NAME | cut -c3-)
+				OUTPUTSTRING=$(printf "%s%-10s${RED}! ${NC}%s\n" "$3" "$2" "$NAME")
+			else
+				OUTPUTSTRING=$(printf "%s%-12s${NC}%s\n" "$3" "$2" "$NAME")
+			fi
+			if [[ -s $f ]]; then
+				OUTPUTSTRING=$(echo -e "$OUTPUTSTRING *")
+			fi
 		fi
 		echo -e "$OUTPUTSTRING"
 	done
@@ -58,8 +60,8 @@ print_demotivation() {
 feierabend() {
 	cd $DATADIR/done
 	TODAYSDATE=$(date --iso-8601)
-	if [[ ! -d $TODAYSDATE ]]; then
-		mkdir $TODAYSDATE
+	if [[ ! -d $DATADIR/archive/$TODAYSDATE ]]; then
+		mkdir $DATADIR/archive/$TODAYSDATE
 	fi	
 	if [[ ! $(find . -maxdepth 1 -type f) ]]; then
 		echo "u did absolutely nothing today."  
@@ -71,7 +73,7 @@ feierabend() {
         	for f in *; do
 			if ! [[ -d $f ]]; then
                 		echo -e "${YELLOW}Done:    ${NC} $f";
-				mv "$f" $TODAYSDATE
+				mv "$f" $DATADIR/archive/$TODAYSDATE
 			fi
         	done
 		print_motivation
@@ -133,6 +135,7 @@ if [ -z $1 ]; then	# if no arguments given, print all tasks today and tomorrow
 # use the following syntax: directory name, day in "readable case" and name of color variable
 	print_tasks today Today: $GREEN
 	print_tasks tomorrow Tomorrow: $BLUE
+	print_tasks done Done: $YELLOW
 #	print_tasks later Later $RED 	# in case one wants that...
 	exit 0
 fi
