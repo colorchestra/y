@@ -1,7 +1,7 @@
 #!/bin/bash
 
 MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at u go" "nice work, yay" "u amazinggggggg" "u did good, kid" "this shit is bananas, B-A-N-A-N-A-S!" "the best there ever was" "u the real mvp")
-DEMOTIVATION=("u lazy piece of shit" "weeeell done *slow clap*" "son i am disappoint" "lauch")
+DEMOTIVATION=("u lazy piece of shit" "weeeell done *slow clap*" "son i am disappoint" "lauch" "u suck" "all you had to do was follow the damn train!" "the fuck is wrong with you" "try harder, pal")
 
 BASEDIR=~/y
 DATADIR=$BASEDIR/data
@@ -29,14 +29,6 @@ print_tasks() {
 		fi
 		echo -e "$OUTPUTSTRING"
 	done
-}
-
-print_later() {
-	cd $DATADIR/later
-	for f in *; do
-		echo -e ${RED}Later:${NC} $f;
-	done
-	cd $DATADIR
 }
 
 print_motivation() {
@@ -191,7 +183,7 @@ case "$1" in
 		;;
 	later)
 #		print_later
-		print_tasks later Later $RED
+		print_tasks later Later: $RED
 		exit 0
 		;;
 	feierabend)
