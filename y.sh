@@ -96,24 +96,32 @@ feierabend() {
 }
 
 procrastinate() {
-	if [[ -e $DATADIR/today/"$TASK" ]]; then
-		mv $DATADIR/today/"$TASK" $DATADIR/$1/"$TASK"
-	elif [[ -e $DATADIR/tomorrow/"$TASK" ]] && [[ $1 == "later" ]]; then
-		mv $DATADIR/tomorrow/"$TASK" $DATADIR/later/"$TASK"
+	SOURCEDAY="today"
+	TARGETDAY=$1
+	if [[ ! -e $DATADIR/today/"$TASK" ]] && [[ -e $DATADIR/tomorrow/"$TASK" ]]; then	# if task doesn't exist today but only tomorrow, move from tomorrow to later
+		SOURCEDAY="tomorrow"
+		TARGETDAY="later"
+	fi
+	if [[ -e $DATADIR/$SOURCEDAY/"$TASK" ]]; then
+		if [[ ! -e $DATADIR/$TARGETDAY/"$TASK" ]]; then
+			mv $DATADIR/$SOURCEDAY/"$TASK" $DATADIR/$TARGETDAY/"$TASK"
+			echo -e "'$TASK' procrastinated until ${BLUE}$TARGETDAY.${NC}"
+			print_demotivation
+		else
+			echo "'$TASK' already exists $TARGETDAY!"
+		fi
 	else
 		show_usage
 	fi	
-	echo -e "'$TASK' procrastinated until ${BLUE}$1.${NC}"
-	print_demotivation
 	exit 0
 
 }
 show_usage() {
 	echo "y - the existentialist task manager"
 	echo "Usage: y -> show all tasks"
-	echo "       y do ([today][tomorrow][later]) Fix printer -> Create new task, defaults to 'today'."
+	echo "       y do (today|tomorrow|later]) Fix printer -> Create new task, defaults to 'today'."
 	echo "       y done Fix printer -> mark task as done"
-	echo "       y do (if task already exists) -> open task in Vim to add notes"
+	echo "       y do Fix printer (if task already exists) -> open task in Vim to add notes"
 	echo "       y procrastinate Fix printer -> move task to tomorrow"
 	echo "       y superprocrastinate Fix printer -> move task to backlog"
 	echo "       y later -> take a look at your backlog"
@@ -146,10 +154,12 @@ case "$1" in
 			vi $DATADIR/$DAY/"$TASK"
 			exit 0
 		fi
-		if [[ $DAY == "today" ]] && [[ -e $DATADIR/later/$TASK ]]; then  # if tasks exists in later, move to today
-			echo "Task exists in backlog - moving it to today"
-			mv $DATADIR/later/"$TASK" $DATADIR/today/"$TASK"
-		fi
+		for SOURCEDAY in "tomorrow" "later"; do
+			if [[ $DAY == "today" ]] && [[ -e $DATADIR/$SOURCEDAY/"$TASK" ]]; then  # if tasks exists in tomorrow or later, move to today
+				echo "Task exists in $SOURCEDAY - moving it to today"
+				mv $DATADIR/$SOURCEDAY/"$TASK" $DATADIR/today/"$TASK"
+			fi
+		done
 		touch $DATADIR/$DAY/"$TASK"		# create task
 		echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
 		exit 0
