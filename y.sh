@@ -12,56 +12,22 @@ YELLOW='\033[1;33m'
 BLUE='\033[1;34m'
 NC='\033[0m' # No Color
 
-#print_tasks() {
-#	cd $DATADIR/today
-#	for f in *; do
-#		if [[ $f == "! "* ]]; then
-#			OUTPUTSTRING=$(echo -e "${GREEN}Today:  ${RED}!${NC}$(echo $f | cut -c2-)");
-#		else
-#			OUTPUTSTRING=$(echo -e "${GREEN}Today:   ${NC} $f");
-#		fi
-#		if [[ -s $f ]]; then
-#			OUTPUTSTRING=$(echo -e "$OUTPUTSTRING *")
-#		fi
-#		echo -e "$OUTPUTSTRING"
-#	done
-#	cd $DATADIR
-#
-#	cd $DATADIR/tomorrow
-#	for f in *; do
-#		echo -e "${BLUE}Tomorrow:${NC} $f";
-#	done
-#	cd $DATADIR
-#
-#	cd $DATADIR/done
-#	for f in *; do
-#		if ! [[ -d $f ]]; then
-#			echo -e "${YELLOW}Done:    ${NC} $f";
-#		fi
-#	done
-#	cd $DATADIR
-#}
 print_tasks() {
 	cd $DATADIR/$1
 	for f in *; do
-#		SPACES=$(printf "%16s\n" "$1")
-		if [[ $f == "! "* ]]; then
-#			OUTPUTSTRING=$(echo -e "$3$2:  ${RED}!${NC}$(echo $f | cut -c2-)");
-			OUTPUTSTRING=$(echo -e "$3$2:  ${RED}!${NC}$(echo $f | cut -c2-)");
+		NAME=$f
+		if [[ $NAME == "! "* ]]; then
+			NAME=$(echo $NAME | cut -c3-)
+			OUTPUTSTRING=$(printf "%s%-10s${RED}! ${NC}%s\n" "$3" "$2" "$NAME")
 		else
-			OUTPUTSTRING=$(echo -e "$3$2:   ${NC} $f");
+			OUTPUTSTRING=$(printf "%s%-12s${NC}%s\n" "$3" "$2" "$NAME")
 		fi
 		if [[ -s $f ]]; then
 			OUTPUTSTRING=$(echo -e "$OUTPUTSTRING *")
 		fi
 		echo -e "$OUTPUTSTRING"
-#		printf "%12s %s\n" $2 "$OUTPUTSTRING"
-		OUTPUTSTRING=""
 	done
 }
-
-
-
 
 print_later() {
 	cd $DATADIR/later
@@ -87,7 +53,6 @@ print_demotivation() {
 	echo -e ${RED}$DEMOTIVOUT
 	echo -e ${RED}********************************${NC}
 	printf \\n
-
 }
 
 feierabend() {
@@ -157,10 +122,9 @@ show_usage() {
 }
 
 if [ -z $1 ]; then	# if no arguments given, print all tasks today and tomorrow
-#	print_tasks	# old
 # use the following syntax: directory name, day in "readable case" and name of color variable
-	print_tasks today Today $GREEN
-	print_tasks tomorrow Tomorrow $BLUE
+	print_tasks today Today: $GREEN
+	print_tasks tomorrow Tomorrow: $BLUE
 #	print_tasks later Later $RED 	# in case one wants that...
 	exit 0
 fi
