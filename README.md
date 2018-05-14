@@ -1,5 +1,9 @@
 # y - the existentialist task manager
 
+"Heeey - all I have to type is 'y'! Hey, Miss doesn't-find-me-sexually-attractive-anymore, I just tripled my productivity!" / " Y, y... let's see, so many letters to choose from. I'll pick 'y'! Y, y, y..."
+
+– [Homer Simpson](https://youtu.be/R_rF4kcqLkI?t=1m50s)
+
 ## Features
 + Not-really-intuitive CLI interface
 + Super outdated file-based database
