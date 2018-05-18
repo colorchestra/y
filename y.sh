@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at u go" "nice work, yay" "u amazinggggggg" "u did good, kid" "this shit is bananas, B-A-N-A-N-A-S!" "the best there ever was" "u the real mvp")
+MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at u go" "nice work, yay" "u amazinggggggg" "u did good, kid" "this shit is bananas, B-A-N-A-N-A-S!" "the best there ever was" "u the real mvp" "now go treat yoself")
 DEMOTIVATION=("u lazy piece of shit" "weeeell done *slow clap*" "son i am disappoint" "lauch" "u suck" "all you had to do was follow the damn train!" "the fuck is wrong with you" "try harder, pal")
 
 BASEDIR=~/y
@@ -34,9 +34,14 @@ print_tasks() {
 print_motivation() {
 	MOTIVOUT=${MOTIVATION[$(shuf -i 0-$((${#MOTIVATION[@]}-1)) -n 1)]}
 	printf \\n
-	echo -e ${YELLOW}********************************
+#	echo -e ${YELLOW}********************************
+#	printf "%${#MOTIVOUT}c" "*"
+	LEN=${#MOTIVOUT}
+	BRACEX="{1..$LEN}"
+#	printf '%0.1s' "*"{1..15}
+printf '*%.0s $(seq 1 $LEN) \n'
 	echo -e ${YELLOW}$MOTIVOUT
-	echo -e ${YELLOW}********************************${NC}
+#	echo -e ${YELLOW}********************************${NC}
 	printf \\n
 }
 
@@ -124,7 +129,7 @@ show_usage() {
 }
 
 if [ -z $1 ]; then	# if no arguments given, print all tasks today and tomorrow
-# use the following syntax: directory name, day in "readable case" and name of color variable
+			# use the following syntax: directory name, day in "readable case" and name of color variable
 	print_tasks today Today: $GREEN
 	print_tasks tomorrow Tomorrow: $BLUE
 	print_tasks done Done: $YELLOW
@@ -161,6 +166,9 @@ case "$1" in
 		;;
 	done)
 		TASK=$(echo "$@" | cut -c6-)
+		if ! [[ -e $DATADIR/today/"$TASK" ]]; then
+			TASK=$(echo "! $TASK")
+		fi
 		if ! [[ -e $DATADIR/today/"$TASK" ]]; then
 			echo "No such task!"
 			exit 1
@@ -208,6 +216,6 @@ case "$1" in
 
 	*)	echo "Not a valid command."
 		show_usage
-		exit 0
+		exit 1
 		;;
 esac

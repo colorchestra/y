@@ -31,3 +31,4 @@ case $yn in
 	git init
 	exit 0
 	;;
+esac
