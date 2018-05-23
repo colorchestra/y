@@ -37,10 +37,11 @@ print_motivation() {
 #	echo -e ${YELLOW}********************************
 #	printf "%${#MOTIVOUT}c" "*"
 	LEN=${#MOTIVOUT}
-	BRACEX="{1..$LEN}"
+#	for i in $LEN
+#	BRACEX="{1..$LEN}"
 #	printf '%0.1s' "*"{1..15}
-printf '*%.0s $(seq 1 $LEN) \n'
-	echo -e ${YELLOW}$MOTIVOUT
+#	printf '*%.0s $(seq 1 $LEN) \n'
+	echo -e ${YELLOW}$MOTIVOUT${NC}
 #	echo -e ${YELLOW}********************************${NC}
 	printf \\n
 }
@@ -82,11 +83,20 @@ feierabend() {
 	COMMITMESSAGE="Feierabend $(date '+%F %T')"
 	echo "======== Begin Git log for commit '$COMMITMESSAGE' ========" >> $BASEDIR/git.log
 	git add --all >> $BASEDIR/git.log
-	echo "+ git commit"
-	git commit -m "$COMMITMESSAGE" >> $BASEDIR/git.log
+	printf "+ git commit... "
+	if git commit -m "$COMMITMESSAGE" >> $BASEDIR/git.log; then
+		printf "${GREEN}Successful${NC}\n"
+	else
+		printf "${RED}Failed${NC}\n"
+	fi
 	if [[ $(git remote show) ]]; then
-		echo "+ git push"
-		git push >> $BASEDIR/git.log
+		printf "+ git push... "
+		git push --quiet >> $BASEDIR/git.log
+		if [[ $? -eq 0 ]]; then
+			printf "${GREEN}Successful${NC}\n"
+		else
+			printf "${RED}Failed${NC}\n"
+		fi
 	fi
 	echo "======== End Git log for commit '$COMMITMESSAGE' ========" >> $BASEDIR/git.log
 	printf \\n
