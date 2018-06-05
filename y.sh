@@ -72,6 +72,7 @@ feierabend() {
 			if ! [[ -d $f ]]; then
                 		echo -e "${YELLOW}Done:    ${NC} $f";
 				mv "$f" $DATADIR/archive/$TODAYSDATE
+				sleep 1s
 			fi
         	done
 		print_motivation
