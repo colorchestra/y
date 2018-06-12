@@ -1,7 +1,7 @@
 #!/bin/bash
 
 MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at u go" "nice work, yay" "u amazinggggggg" "u did good, kid" "this shit is bananas, B-A-N-A-N-A-S!" "the best there ever was" "u the real mvp" "now go treat yoself")
-DEMOTIVATION=("u lazy piece of shit" "weeeell done *slow clap*" "son i am disappoint" "lauch" "u suck" "all you had to do was follow the damn train!" "the fuck is wrong with you" "try harder, pal")
+DEMOTIVATION=("u lazy piece of shit" "weeeell done *slow clap*" "son i am disappoint" "lauch" "u suck" "all you had to do was follow the damn train!" "the fuck is wrong with you" "try harder, pal" "congratulations on your spectacular failure" "hope ur proud of urself" "is this really what it's come to?")
 
 BASEDIR=~/y
 DATADIR=$BASEDIR/data
@@ -34,15 +34,7 @@ print_tasks() {
 print_motivation() {
 	MOTIVOUT=${MOTIVATION[$(shuf -i 0-$((${#MOTIVATION[@]}-1)) -n 1)]}
 	printf \\n
-#	echo -e ${YELLOW}********************************
-#	printf "%${#MOTIVOUT}c" "*"
-	LEN=${#MOTIVOUT}
-#	for i in $LEN
-#	BRACEX="{1..$LEN}"
-#	printf '%0.1s' "*"{1..15}
-#	printf '*%.0s $(seq 1 $LEN) \n'
 	echo -e ${YELLOW}$MOTIVOUT${NC}
-#	echo -e ${YELLOW}********************************${NC}
 	printf \\n
 }
 
@@ -171,6 +163,11 @@ case "$1" in
 				mv $DATADIR/$SOURCEDAY/"$TASK" $DATADIR/today/"$TASK"
 			fi
 		done
+		# experimental ghetto input validation
+		if [[ "$TASK" =~ ^\. ]] || [[ "$TASK" =~ [\*\/\;] ]]; then
+			echo "Error: a task name can not start with a . or contain any of the following characters: * / ;. Exiting."
+			exit 1
+		fi
 		touch $DATADIR/$DAY/"$TASK"		# create task
 		echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
 		exit 0
