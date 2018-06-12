@@ -5,6 +5,7 @@
 – [Homer Simpson](https://youtu.be/R_rF4kcqLkI?t=1m50s)
 
 ## Features
++ Ask yourself: "y the hell am I doing this?" with every new task
 + Not-really-intuitive CLI interface
 + Super outdated file-based database
 + Automatic Git commits on Feierabend (and push if a remote is set)
@@ -17,7 +18,7 @@
 + `y` -> show all tasks
 + `y do (today|tomorrow|later) Fix printer` -> Create new task, defaults to 'today', or move to today if it exists tomorrow or later
 + `y done Fix printer` -> mark task as done
-+ `y do Fix printer` (if task already exists) -> open task in Vim to add notes
++ `y do Fix printer` (if task already exists) -> open task in Vim to add notes (absolutely not compatible with any other editor, nu-uh, sorry) (not sorry)
 + `y procrastinate Fix printer` -> move task to tomorrow
 + `y superprocrastinate Fix printer` -> move task to backlog
 + `y later` -> take a look at your backlog
