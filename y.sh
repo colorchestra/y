@@ -41,9 +41,7 @@ print_motivation() {
 print_demotivation() {
 	DEMOTIVOUT=${DEMOTIVATION[$(shuf -i 0-$((${#DEMOTIVATION[@]}-1)) -n 1)]}
 	printf \\n
-	echo -e ${RED}********************************
 	echo -e ${RED}$DEMOTIVOUT
-	echo -e ${RED}********************************${NC}
 	printf \\n
 }
 
@@ -149,11 +147,13 @@ case "$1" in
 		case "$2" in
 			today|tomorrow|later)		# parse day
 				DAY=$2
-				TASK=$(echo "$@" | cut -c${#2}- | cut -c6- ) 	# cut 'y do' and day
+				shift; shift
+				TASK="$@"
 				;;
 			*)
 				DAY=today
-				TASK=$(echo "$@"| cut -c4-) 			# cut 'y do'
+				shift
+				TASK="$@"
 				;;
 		esac
 		if [[ -e $DATADIR/$DAY/$TASK ]]; then	# open in editor if task already exists
