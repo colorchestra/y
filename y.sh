@@ -24,7 +24,7 @@ print_tasks() {
 				OUTPUTSTRING=$(printf "%s%-12s${NC}%s\n" "$3" "$2" "$NAME")
 			fi
 			if [[ -s $f ]]; then
-				OUTPUTSTRING=$(echo -e "$OUTPUTSTRING *")
+				OUTPUTSTRING=$(echo -e "$OUTPUTSTRING *")   # if file not empty, do asterisk thingy
 			fi
 		fi
 		echo -e "$OUTPUTSTRING"
@@ -86,7 +86,7 @@ feierabend() {
 	else
 		printf "${RED}Failed${NC}\n"
 	fi
-	if [[ $(git remote show) ]]; then
+	if [[ $? -eq 0 ]] && [[ $(git remote show) ]]; then
 		printf "+ git push... "
 		git push --quiet >> $BASEDIR/git.log
 		if [[ $? -eq 0 ]]; then

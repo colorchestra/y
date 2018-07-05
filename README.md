@@ -29,7 +29,11 @@
 + Run `setup.sh`
 
 ## Known issues
-Nothing, this piece of software is perfect®
++ "tomorrow" directory is always empty when committing the data dir, so git doesn't track it, it can't really: https://stackoverflow.com/questions/115983/how-can-i-add-an-empty-directory-to-a-git-repository. When cloning a data directory from a remote, "tomorrow" isn't there, causing errors.
+  + Either hack the empty dir into the repo
+  + or modify setup.sh to run after cloning, only to create the dir without breaking anything else
+
+~~Nothing, this piece of software is perfect®~~
 
 ## To do
 
