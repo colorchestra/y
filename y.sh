@@ -62,9 +62,13 @@ feierabend() {
 		printf \\n					# show all files from 'done'
         	for f in *; do
 			if ! [[ -d $f ]]; then
-                		echo -e "${YELLOW}Done:    ${NC} $f";
+				for (( c=0; c < ${#f}; c++ )); do
+					printf "${f:$c:1}"
+					sleep 0.05
+				done
+				printf \\n
 				mv "$f" $DATADIR/archive/$TODAYSDATE
-				sleep 1s
+				sleep 0.5s
 			fi
         	done
 		print_motivation
