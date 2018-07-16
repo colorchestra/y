@@ -60,7 +60,7 @@ feierabend() {
 		printf \\n					# show all files from 'done'
         	for f in *; do
 			if ! [[ -d $f ]]; then
-				for (( c=0; c < ${#f}; c++ )); do
+				for (( c=0; c < ${#f}; c++ )); do	# super flashy magic effect thingy
 					printf "${f:$c:1}"
 					sleep 0.05
 				done
@@ -75,6 +75,14 @@ feierabend() {
 	if [[ ! -z "$(ls -A $DATADIR/tomorrow)" ]]; then
 		mv $DATADIR/tomorrow/* $DATADIR/today/
 	fi
+
+# unfinished 'show task age' thing 
+#	CURRTIME=$(date +%s)
+#	for f in today/*; do
+#		if [[ ! $f == "! *" ]]; then
+#			CHANGETIME=$(stat -c %Y today/$f)
+#			echo OUIHSDUIPGDFPIUGHSDFGHSUIEDFHGSUIPDHFGIPSUDFHGUISDHFGIPUSDHFGUIPSDHFPIGUHSDFIPGUHSPDIFUGHSDIPUFGH
+
 	COMMITMESSAGE="Feierabend $(date '+%F %T')"
 	echo "======== Begin Git log for commit '$COMMITMESSAGE' ========" >> $BASEDIR/git.log
 	git add --all >> $BASEDIR/git.log
@@ -149,6 +157,12 @@ case "$1" in
 				DAY=$2
 				shift; shift
 				TASK="$@"
+				;;
+
+			"")
+				echo "Error: no task name given"
+				show_usage
+				exit 0
 				;;
 			*)
 				DAY=today
