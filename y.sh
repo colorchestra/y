@@ -45,6 +45,31 @@ print_demotivation() {
 	printf \\n
 }
 
+add_task() {
+	DAY="$1"
+	shift
+	TASK="$@"
+	if [[ -e $DATADIR/$DAY/"$TASK" ]]; then	# open in editor if task already exists
+		echo "DEBUG: task "$TASK" exists, opening in editor"
+		vi $DATADIR/$DAY/"$TASK"
+		exit 0
+	fi
+	for SOURCEDAY in "tomorrow" "later"; do
+		if [[ $DAY == "today" ]] && [[ -e $DATADIR/$SOURCEDAY/"$TASK" ]]; then  # if tasks exists in tomorrow or later, move to today
+			echo "Task exists in $SOURCEDAY - moving it to today"
+			mv $DATADIR/$SOURCEDAY/"$TASK" $DATADIR/today/"$TASK"
+		fi
+	done
+	# experimental ghetto input validation
+	if [[ "$TASK" =~ ^\. ]] || [[ "$TASK" =~ [\*\/\;] ]]; then
+		echo "Error: a task name can not start with a . or contain any of the following characters: * / ;. Exiting."
+		exit 1
+	fi
+	touch $DATADIR/$DAY/"$TASK"		# create task
+	echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
+	exit 0
+	}
+
 feierabend() {
 	cd $DATADIR/done
 	TODAYSDATE=$(date --iso-8601)
@@ -152,11 +177,13 @@ fi
 
 case "$1" in 
 	do)
+
 		case "$2" in
 			today|tomorrow|later)		# parse day
 				DAY=$2
 				shift; shift
-				TASK="$@"
+				add_task $DAY "$@"
+				exit 0
 				;;
 
 			"")
@@ -167,29 +194,12 @@ case "$1" in
 			*)
 				DAY=today
 				shift
-				TASK="$@"
+				add_task $DAY "$@"
 				;;
 		esac
-		if [[ -e $DATADIR/$DAY/$TASK ]]; then	# open in editor if task already exists
-			echo "DEBUG: task exists, opening in editor"
-			vi $DATADIR/$DAY/"$TASK"
-			exit 0
-		fi
-		for SOURCEDAY in "tomorrow" "later"; do
-			if [[ $DAY == "today" ]] && [[ -e $DATADIR/$SOURCEDAY/"$TASK" ]]; then  # if tasks exists in tomorrow or later, move to today
-				echo "Task exists in $SOURCEDAY - moving it to today"
-				mv $DATADIR/$SOURCEDAY/"$TASK" $DATADIR/today/"$TASK"
-			fi
-		done
-		# experimental ghetto input validation
-		if [[ "$TASK" =~ ^\. ]] || [[ "$TASK" =~ [\*\/\;] ]]; then
-			echo "Error: a task name can not start with a . or contain any of the following characters: * / ;. Exiting."
-			exit 1
-		fi
-		touch $DATADIR/$DAY/"$TASK"		# create task
-		echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
-		exit 0
 		;;
+
+
 	done)
 		TASK=$(echo "$@" | cut -c6-)
 		if ! [[ -e $DATADIR/today/"$TASK" ]]; then
