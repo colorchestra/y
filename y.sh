@@ -41,7 +41,7 @@ print_motivation() {
 print_demotivation() {
 	DEMOTIVOUT=${DEMOTIVATION[$(shuf -i 0-$((${#DEMOTIVATION[@]}-1)) -n 1)]}
 	printf \\n
-	echo -e ${RED}$DEMOTIVOUT
+	echo -e ${RED}$DEMOTIVOUT${NC}
 	printf \\n
 }
 
@@ -50,7 +50,7 @@ add_task() {
 	shift
 	TASK="$@"
 	if [[ -e $DATADIR/$DAY/"$TASK" ]]; then	# open in editor if task already exists
-		echo "DEBUG: task "$TASK" exists, opening in editor"
+		echo "Task '$TASK' exists, opening in editor..."
 		vi $DATADIR/$DAY/"$TASK"
 		exit 0
 	fi
@@ -78,7 +78,6 @@ feierabend() {
 	fi	
 	if [[ ! $(find . -maxdepth 1 -type f) ]]; then
 		echo "u did absolutely nothing today."  
-		printf \\n
 		print_demotivation
 	else
 		echo -e "${GREEN}here's what u did today${NC}"
@@ -112,23 +111,31 @@ feierabend() {
 	echo "======== Begin Git log for commit '$COMMITMESSAGE' ========" >> $BASEDIR/git.log
 	git add --all >> $BASEDIR/git.log
 	printf "+ git commit... "
-	if git commit -m "$COMMITMESSAGE" >> $BASEDIR/git.log; then
-		printf "${GREEN}Successful${NC}\n"
-	else
-		printf "${RED}Failed${NC}\n"
-	fi
-	if [[ $? -eq 0 ]] && [[ $(git remote show) ]]; then
-		printf "+ git push... "
-		git push --quiet >> $BASEDIR/git.log
-		if [[ $? -eq 0 ]]; then
-			printf "${GREEN}Successful${NC}\n"
-		else
-			printf "${RED}Failed${NC}\n"
+	COMMITOUTPUT=$(git commit -m "$COMMITMESSAGE")
+	if [[ $? -eq 0 ]]; then
+		printf "${GREEN}%12s${NC}\n" "Successful"
+		echo "$COMMITOUTPUT" >> $BASEDIR/git.log
+		if [[ $(git remote show) ]] ; then
+			printf "+ git push... "
+			PUSHOUTPUT=$(git push -u origin master 2>&1)
+			if [[ $? -eq 0 ]]; then
+				printf "${GREEN}%14s${NC}\n" "Successful"
+				echo "$COMMITOUTPUT" >> $BASEDIR/git.log
+			else
+				printf "${RED}%10s${NC}\n" "Failed"
+				echo "$PUSHOUTPUT" >> $BASEDIR/git.log
+				echo "$PUSHOUTPUT"
+			fi
 		fi
+
+	else
+		printf "${RED}%8s${NC}\n" "Failed"
+		echo "$COMMITOUTPUT" >> $BASEDIR/git.log
+		echo "$COMMITOUTPUT"
 	fi
-	echo "======== End Git log for commit '$COMMITMESSAGE' ========" >> $BASEDIR/git.log
+	echo "========== End Git log for commit '$COMMITMESSAGE' ========" >> $BASEDIR/git.log
 	printf \\n
-	echo "Remember to stop tracking your time"
+	echo "Remember to stop your timetracking."
 	echo "Good night!"
 }
 
