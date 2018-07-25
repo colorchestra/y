@@ -9,10 +9,11 @@
 + Not-really-intuitive CLI interface
 + Super outdated file-based database
 + Automatic Git commits on Feierabend (and push if a remote is set)
-+ Easy procrastination (you will be insulted)
++ Easy procrastination (you will be insultedi though)
 + Positive reinforcement if you get stuff done
 + Tasks can be marked as important if prepended with `! ` (exclamation mark and a space)
-+ Tasks are marked with an asterisk if they contain text
++ Each task is a text file, so additional information can be stored for each task
++ If a task contains text, its first line is shown along with the list of tasks
 
 ## Usage
 + `y` -> show all tasks

@@ -16,6 +16,7 @@ print_tasks() {
 	cd $DATADIR/$1
 	for f in *; do
 		NAME=$f
+		COMMENTSTRING=""
 		if [[ ! -d $f ]]; then
 			if [[ $NAME == "! "* ]]; then
 				NAME=$(echo $NAME | cut -c3-)
@@ -24,10 +25,12 @@ print_tasks() {
 				OUTPUTSTRING=$(printf "%s%-12s${NC}%s\n" "$3" "$2" "$NAME")
 			fi
 			if [[ -s $f ]]; then
-				OUTPUTSTRING=$(echo -e "$OUTPUTSTRING *")   # if file not empty, do asterisk thingy
+#				OUTPUTSTRING=$(echo -e "$OUTPUTSTRING *")   # if file not empty, do asterisk thingy
+				COMMENTSTRING=$(printf "%15s ↳ $(head -1 "$f")")
 			fi
 		fi
 		echo -e "$OUTPUTSTRING"
+		if [ ! -z "$COMMENTSTRING" ]; then echo -e "$COMMENTSTRING"; fi
 	done
 }
 
