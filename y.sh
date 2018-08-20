@@ -72,6 +72,23 @@ add_task() {
 	exit 0
 	}
 
+schedule_task() {
+	if [[ ! $(which at) ]]; then
+		echo "'at' appears not to be installed. Task scheduling depends on it."
+	fi
+	SCHEDTIME="$2"
+	SCHEDDATE="$3"
+	shift; shift
+	TASK="$@"
+	add_task later "$TASK"
+	echo "$BASEDIR/y.sh do tomorrow $TASK" | at $SCHEDTIME $SCHEDDATE 
+	
+
+
+
+
+}
+
 feierabend() {
 	cd $DATADIR/done
 	TODAYSDATE=$(date --iso-8601)
@@ -170,6 +187,7 @@ show_usage() {
 	echo "       y do Fix printer (if task already exists) -> open task in Vim to add notes"
 	echo "       y procrastinate Fix printer -> move task to tomorrow"
 	echo "       y superprocrastinate Fix printer -> move task to backlog"
+	echo "       y vanish today|tomorrow|later Fix printer -> delete task"
 	echo "       y later -> take a look at your backlog"
 	echo "       y feierabend -> done for the day"
 	exit 0
@@ -235,8 +253,11 @@ case "$1" in
 		exit 0
 		;;
 	later)
-#		print_later
 		print_tasks later Later: $RED
+		exit 0
+		;;
+	schedule|sched)
+		schedule_task "$@"
 		exit 0
 		;;
 	feierabend)
@@ -247,7 +268,24 @@ case "$1" in
 		$BASEDIR/clean.sh
 		exit 0
 		;;
-	vanish)				# unfinished - do not use
+	vanish|rm)				# unfinished - do not use
+		if [[ "$2" == "today" || "$2" == "tomorrow" || "$2" == "later" ]]; then
+			DAY="$2"
+			shift; shift
+			TASK="$@"
+			cd "$DATADIR"/"$DAY"
+#			if [[ $(rm "$TASK") ]]; then  # kaputt, y?
+			rm "$TASK"
+			if [[ $? -eq 0 ]]; then
+				echo -e "Task '$TASK' has vanished."
+#			else	# debug
+#				echo "rm has returned non-zero"
+			fi
+			exit 0
+		else
+			echo "nö"
+			exit 1
+		fi
 		cd $DATADIR/today/
 		rm "$@"
 		echo "harharhar"
