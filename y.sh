@@ -13,6 +13,10 @@ BLUE='\033[1;34m'
 NC='\033[0m' # No Color
 
 print_tasks() {
+	if [[ ! -d "$DATADIR/$1" ]]; then
+		echo "Directory '$1' not found! Exiting."
+		exit 1
+	fi
 	cd $DATADIR/$1
 	for f in *; do
 		NAME=$f
@@ -69,25 +73,7 @@ add_task() {
 	fi
 	touch $DATADIR/$DAY/"$TASK"		# create task
 	echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
-	exit 0
 	}
-
-schedule_task() {
-	if [[ ! $(which at) ]]; then
-		echo "'at' appears not to be installed. Task scheduling depends on it."
-	fi
-	SCHEDTIME="$2"
-	SCHEDDATE="$3"
-	shift; shift
-	TASK="$@"
-	add_task later "$TASK"
-	echo "$BASEDIR/y.sh do tomorrow $TASK" | at $SCHEDTIME $SCHEDDATE 
-	
-
-
-
-
-}
 
 feierabend() {
 	cd $DATADIR/done
@@ -257,7 +243,7 @@ case "$1" in
 		exit 0
 		;;
 	schedule|sched)
-		schedule_task "$@"
+		"$BASEDIR"/schedule.sh "$@"
 		exit 0
 		;;
 	feierabend)
@@ -274,12 +260,11 @@ case "$1" in
 			shift; shift
 			TASK="$@"
 			cd "$DATADIR"/"$DAY"
-#			if [[ $(rm "$TASK") ]]; then  # kaputt, y?
 			rm "$TASK"
 			if [[ $? -eq 0 ]]; then
 				echo -e "Task '$TASK' has vanished."
-#			else	# debug
-#				echo "rm has returned non-zero"
+			else	# debug
+				echo "rm has returned non-zero"
 			fi
 			exit 0
 		else
