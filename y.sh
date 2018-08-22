@@ -6,11 +6,15 @@ DEMOTIVATION=("u lazy piece of shit" "weeeell done *slow clap*" "son i am disapp
 BASEDIR=~/y
 DATADIR=$BASEDIR/data
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[1;34m'
-NC='\033[0m' # No Color
+DOLLARNULL=$(echo "$0" | sed 's/.*\///')
+if [[ ! "$DOLLARNULL" == *nocolor* ]]; then
+
+	RED='\033[0;31m'
+	GREEN='\033[0;32m'
+	YELLOW='\033[1;33m'
+	BLUE='\033[1;34m'
+	NC='\033[0m' # No Color
+fi
 
 print_tasks() {
 	if [[ ! -d "$DATADIR/$1" ]]; then

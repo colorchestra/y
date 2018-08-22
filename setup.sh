@@ -13,6 +13,9 @@ for d in today tomorrow later done archive; do
 	fi
 done
 
+echo "Creating nocolor symlink..."
+ln -s y.sh y-nocolor.sh
+
 echo "Removing old aliases from .bashrc..."
 sed -i '/alias y=/d' ~/.bashrc
 

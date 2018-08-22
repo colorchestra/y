@@ -6,3 +6,6 @@ data/
 
 # log files
 *.log
+
+# nocolor hack symlink
+y-nocolor.sh
