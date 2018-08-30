@@ -223,7 +223,7 @@ case "$1" in
 			show_usage
 			exit 1
 		fi
-		TASK=$(echo "$@" | cut -c6-)
+		shift; TASK="$@"
 		if ! [[ -e $DATADIR/today/"$TASK" ]]; then
 			TASK=$(echo "! $TASK")
 		fi
@@ -238,12 +238,12 @@ case "$1" in
 		;;
 
 	procrastinate)
-		TASK=$(echo "$@" | cut -c15-)
+		shift; TASK="$@"
 		procrastinate tomorrow
 		exit 0
 		;;
 	superprocrastinate)
-		TASK=$(echo "$@" | cut -c20-)
+		shift; TASK="$@"
 		procrastinate later
 		exit 0
 		;;
