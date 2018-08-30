@@ -206,7 +206,7 @@ case "$1" in
 			"")
 				echo "Error: no task name given"
 				show_usage
-				exit 0
+				exit 1
 				;;
 			*)
 				DAY=today
@@ -218,6 +218,11 @@ case "$1" in
 
 
 	done)
+		if [ -z $2 ]; then
+			echo "Error: no task name given"
+			show_usage
+			exit 1
+		fi
 		TASK=$(echo "$@" | cut -c6-)
 		if ! [[ -e $DATADIR/today/"$TASK" ]]; then
 			TASK=$(echo "! $TASK")
