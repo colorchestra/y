@@ -110,11 +110,14 @@ feierabend() {
 	fi
 
 # unfinished 'show task age' thing 
+# the idea is to mark all tasks as important that are older than a week. this could be done on feierabend.
 #	CURRTIME=$(date +%s)
-#	for f in today/*; do
-#		if [[ ! $f == "! *" ]]; then
-#			CHANGETIME=$(stat -c %Y today/$f)
-#			echo OUIHSDUIPGDFPIUGHSDFGHSUIEDFHGSUIPDHFGIPSUDFHGUISDHFGIPUSDHFGUIPSDHFPIGUHSDFIPGUHSPDIFUGHSDIPUFGH
+#	for f in $DATADIR/today/*; do
+#		if [[ ! "$f" == "! *" ]]; then
+#			CHANGETIME=$(stat -c %Y "$f")
+#			echo "last change: $CHANGETIME, now: $CURRTIME"
+#		fi
+#	done	
 
 	COMMITMESSAGE="Feierabend $(date '+%F %T')"
 	echo "======== Begin Git log for commit '$COMMITMESSAGE' ========" >> $BASEDIR/git.log
