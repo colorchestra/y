@@ -1,15 +1,16 @@
 # y - the existentialist task manager
 
-"Heeey - all I have to type is 'y'! Hey, Miss doesn't-find-me-sexually-attractive-anymore, I just tripled my productivity!" / " Y, y... let's see, so many letters to choose from. I'll pick 'y'! Y, y, y..."
+"Heeey - all I have to type is 'y'! Hey, Miss doesn't-find-me-sexually-attractive-anymore, I just tripled my productivity!"
 
 – [Homer Simpson](https://youtu.be/R_rF4kcqLkI?t=1m50s)
 
 ## Features
 + Ask yourself: "y the hell am I doing this?" with every new task
++ Semi-functional bash completion
 + Not-really-intuitive CLI interface
 + Super outdated file-based database
 + Automatic Git commits on Feierabend (and push if a remote is set)
-+ Easy procrastination (you will be insultedi though)
++ Easy procrastination (you will be insulted though)
 + Positive reinforcement if you get stuff done
 + Tasks can be marked as important if prepended with `! ` (exclamation mark and a space)
 + Each task is a text file, so additional information can be stored for each task
@@ -28,6 +29,8 @@
 ## Setup
 + Clone to your home directory
 + Run `setup.sh`
+
+Currently only Bash is supported.
 
 ## Known issues
 + "tomorrow" directory is always empty when committing the data dir, so git doesn't track it, it can't really: https://stackoverflow.com/questions/115983/how-can-i-add-an-empty-directory-to-a-git-repository. When cloning a data directory from a remote, "tomorrow" isn't there, causing errors.
