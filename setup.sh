@@ -3,18 +3,32 @@
 BASEDIR=~/y
 DATADIR=$BASEDIR/data/
 
-echo "Creating data directory..."
-mkdir $DATADIR
+printf "Creating data directory... "
+if [ ! -e "$DATADIR" ]; then
+	mkdir "$DATADIR"
+	printf "Successful.\n"
+else
+	printf "Directory already exists!\n"
+fi
 
-echo "Creating daily directories..."
+printf "Creating daily directories... "
 for d in today tomorrow later done archive; do
-	if ! [[ -e $DATADIR/$d ]]; then
-		mkdir $DATADIR/$d
+	if ! [[ -e "$DATADIR/$d" ]]; then
+		mkdir "$DATADIR/$d"
+	else
+		printf "Directory '$d' already exists! "
+
 	fi
 done
+printf \\n
 
-echo "Creating nocolor symlink..."
-ln -s y.sh y-nocolor.sh
+printf "Creating nocolor symlink... "
+if [ ! -h "$BASEDIR/y-nocolor.sh" ]; then
+	ln -s y.sh y-nocolor.sh
+	printf "Successful.\n"
+else
+	printf "Symlink already exists!\n"
+fi
 
 echo "Removing old stuff from .bashrc..."
 sed -i '/alias y=/d' ~/.bashrc
@@ -26,7 +40,7 @@ echo "alias y='$BASEDIR/y.sh'" >> ~/.bashrc
 echo "Writing completion stuff to .bashrc..."
 echo "source $BASEDIR/completion.sh" >> ~/.bashrc
 
-echo "Please run `source ~/.bashrc` to enable bash completion (or start a new shell, or log out and back in)"
+echo "Please run 'source ~/.bashrc' to enable bash completion (or start a new shell, or log out and back in)"
 echo "Done."
 
 read -p "Do you have an existing y data directory, e.g. in a Git repo? (yes/no) " yn
