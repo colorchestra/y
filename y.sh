@@ -221,7 +221,7 @@ case "$1" in
 
 
 	done)
-		if [ -z $2 ]; then
+		if [ -z "$2" ]; then
 			echo "Error: no task name given"
 			show_usage
 			exit 1
