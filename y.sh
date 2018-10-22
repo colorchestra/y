@@ -4,7 +4,13 @@ MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at
 DEMOTIVATION=("u lazy piece of shit" "weeeell done *slow clap*" "son i am disappoint" "lauch" "u suck" "all you had to do was follow the damn train!" "the fuck is wrong with you" "try harder, pal" "congratulations on your spectacular failure" "hope ur proud of urself")
 
 BASEDIR=~/y
-DATADIR=$BASEDIR/data
+DEFAULTDATADIR=$BASEDIR/data
+
+if [ -z $DATADIR ]; then
+	DATADIR="$DEFAULTDATADIR"
+fi	
+
+echo "DEBUG: current DATADIR: $DATADIR"
 
 DOLLARNULL=$(echo "$0" | sed 's/.*\///')
 if [[ ! "$DOLLARNULL" == *nocolor* ]]; then
