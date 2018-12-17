@@ -10,7 +10,7 @@ if [ -z $DATADIR ]; then
 	DATADIR="$DEFAULTDATADIR"
 fi	
 
-echo "DEBUG: current DATADIR: $DATADIR"
+# echo "DEBUG: current DATADIR: $DATADIR"
 
 DOLLARNULL=$(echo "$0" | sed 's/.*\///')
 if [[ ! "$DOLLARNULL" == *nocolor* ]]; then
@@ -84,6 +84,23 @@ add_task() {
 	touch $DATADIR/$DAY/"$TASK"		# create task
 	echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
 	}
+
+prioritize() {
+	if ! [[ -e $DATADIR/today/"$TASK" ]]; then
+		echo "No such task!"
+		exit 1
+	else
+		if [[ "$TASK" == "! "* ]]; then
+			mv "$DATADIR/today/$TASK" "$DATADIR/today/$(echo $TASK | cut -c3-)"
+			echo "De-prioritized task '$(echo $TASK | cut -c3-)'."
+			exit 0
+		else
+			mv "$DATADIR/today/$TASK" "$DATADIR/today/! $TASK"
+			echo "Prioritized task '! $TASK'."
+			exit
+		fi
+	fi
+}
 
 feierabend() {
 	cd $DATADIR/done
@@ -186,6 +203,7 @@ show_usage() {
 	echo "       y do Fix printer (if task already exists) -> open task in Vim to add notes"
 	echo "       y procrastinate Fix printer -> move task to tomorrow"
 	echo "       y superprocrastinate Fix printer -> move task to backlog"
+	echo "       y prioritize Fix printer -> toggle mark task as important"
 	echo "       y vanish today|tomorrow|later Fix printer -> delete task"
 	echo "       y later -> take a look at your backlog"
 	echo "       y feierabend -> done for the day"
@@ -246,6 +264,11 @@ case "$1" in
 		print_motivation
 		;;
 
+	prioritize|prio)	# still janky and beta
+		shift; TASK="$@"
+		prioritize
+		exit 0
+		;;
 	procrastinate)
 		shift; TASK="$@"
 		procrastinate tomorrow

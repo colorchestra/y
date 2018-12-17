@@ -23,6 +23,8 @@
 + `y do Fix printer` (if task already exists) -> open task in Vim to add notes (absolutely not compatible with any other editor, nu-uh, sorry) (not sorry)
 + `y procrastinate Fix printer` -> move task to tomorrow
 + `y superprocrastinate Fix printer` -> move task to backlog
++ `y prioritize Fix printer` -> toggle mark task as important
+	
 + `y later` -> take a look at your backlog
 + `y feierabend` -> done for the day
 
