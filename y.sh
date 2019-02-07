@@ -2,6 +2,7 @@
 
 MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at u go" "nice work, yay" "u amazinggggggg" "u did good, kid" "this shit is bananas, B-A-N-A-N-A-S!" "the best there ever was" "u the real mvp" "now go treat yoself")
 DEMOTIVATION=("u lazy piece of shit" "weeeell done *slow clap*" "son i am disappoint" "lauch" "u suck" "all you had to do was follow the damn train!" "the fuck is wrong with you" "try harder, pal" "congratulations on your spectacular failure" "hope ur proud of urself")
+HEADLINE=("Frisch ans Werk, Freund!" "Wer wagt, gewinnt!" "Müßiggang ist aller Laster Anfang!" "Wer wagt, gewinnt!" "Den Tüchtigen gehört die Welt!" "Gib jedem Tag die Chance, der produktivste deines Lebens zu werden!" "Ich arbeite gern für meinen Konzern!" "You gotta do what you gotta do" "Wir haben uns alle lieb im Betrieb!" "Der frühe Vogel fängt den Wurm!")
 
 BASEDIR=~/y
 DEFAULTDATADIR=$BASEDIR/data
@@ -19,6 +20,7 @@ if [[ ! "$DOLLARNULL" == *nocolor* ]]; then
 	GREEN='\033[0;32m'
 	YELLOW='\033[1;33m'
 	BLUE='\033[1;34m'
+	BOLD='\033[1m'
 	NC='\033[0m' # No Color
 fi
 
@@ -212,6 +214,8 @@ show_usage() {
 
 if [ -z $1 ]; then	# if no arguments given, print all tasks today and tomorrow
 			# use the following syntax: directory name, day in "readable case" and name of color variable
+	HEADLINEOUT=${HEADLINE[$(shuf -i 0-$((${#HEADLINE[@]}-1)) -n 1)]}
+	echo -e ${BOLD}$HEADLINEOUT${NC}
 	print_tasks today Today: $GREEN
 	print_tasks tomorrow Tomorrow: $BLUE
 	print_tasks done Done: $YELLOW
