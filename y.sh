@@ -299,6 +299,12 @@ case "$1" in
 		$BASEDIR/clean.sh
 		exit 0
 		;;
+       pull)
+                cd "$DATADIR"
+                echo "Pulling fresh data from $(git remote get-url --push origin)..."
+                git pull
+                exit 0
+                ;;
 	vanish|rm)				# unfinished - do not use
 		if [[ "$2" == "today" || "$2" == "tomorrow" || "$2" == "later" ]]; then
 			DAY="$2"
