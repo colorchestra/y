@@ -2,7 +2,7 @@
 
 MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at u go" "nice work, yay" "u amazinggggggg" "u did good, kid" "this shit is bananas, B-A-N-A-N-A-S!" "the best there ever was" "u the real mvp" "now go treat yoself")
 DEMOTIVATION=("u lazy piece of shit" "weeeell done *slow clap*" "son i am disappoint" "lauch" "u suck" "all you had to do was follow the damn train!" "the fuck is wrong with you" "try harder, pal" "congratulations on your spectacular failure" "hope ur proud of urself")
-HEADLINE=("Frisch ans Werk, Freund!" "Wer wagt, gewinnt!" "Müßiggang ist aller Laster Anfang!" "Wer wagt, gewinnt!" "Den Tüchtigen gehört die Welt!" "Gib jedem Tag die Chance, der produktivste deines Lebens zu werden!" "Ich arbeite gern für meinen Konzern!" "You gotta do what you gotta do" "Wir haben uns alle lieb im Betrieb!" "Der frühe Vogel fängt den Wurm!")
+HEADLINE=("Frisch ans Werk, Freund!" "Morgenstund hat Gold im Mund!" "Wer wagt, gewinnt!" "Müßiggang ist aller Laster Anfang!" "Wer wagt, gewinnt!" "Den Tüchtigen gehört die Welt!" "Gib jedem Tag die Chance, der produktivste deines Lebens zu werden!" "Ich arbeite gern für meinen Konzern!" "You gotta do what you gotta do 👍" "Wir haben uns alle lieb im Betrieb!" "Der frühe Vogel fängt den Wurm!" "Die schönste Zeit... ist die Arbeit!" "Frage nicht, was dein Arbeitsplatz für dich tun kann - frage, was du für deinen Arbeitsplatz tun kannst!" "Die schönste Musik? - Der Sound der Fabrik!")
 
 BASEDIR=~/y
 DEFAULTDATADIR=$BASEDIR/data
