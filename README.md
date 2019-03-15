@@ -17,6 +17,7 @@
 + Tasks can be marked as important if prepended with `! ` (exclamation mark and a space)
 + Each task is a text file, so additional information can be stored for each task
 + If a task contains text, its first line is shown along with the list of tasks
++ Made with 😤 in Frankfurt am Nein
 
 ## Usage
 + `y` -> show all tasks
