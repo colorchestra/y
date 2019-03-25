@@ -197,6 +197,21 @@ procrastinate() {
 	exit 0
 
 }
+
+clean() {
+    read -p "Are you SURE you want to irrecoverably delete ALL of your entries? (yes/no) " cleanyn
+    case $cleanyn in
+         [Yy]*) for i in today tomorrow later done; do rm -rf "$DATADIR"/$i/*; done
+         rm $BASEDIR/git.log
+             echo "All entries deleted."
+             exit 0
+             ;;
+         *) echo "Aborting."
+            exit 1
+            ;;
+   esac
+}
+
 show_usage() {
 	echo "y - the existentialist task manager"
 	echo "Usage: y -> show all tasks"
@@ -256,9 +271,7 @@ case "$1" in
 		fi
 		shift; TASK="$@"
 		if ! [[ -e $DATADIR/today/"$TASK" ]]; then
-			# echo "No such task!" # legacy behavior 
             add_task today "$TASK"
-#			exit 1
 		fi
 		mv $DATADIR/today/"$TASK" $DATADIR/done/
 		printf \\n
@@ -293,16 +306,16 @@ case "$1" in
 		feierabend
 		exit 0
 		;;
-	clean)
-		$BASEDIR/clean.sh
-		exit 0
-		;;
-       pull)
-                cd "$DATADIR"
-                echo "Pulling fresh data from $(git remote get-url --push origin)..."
-                git pull
-                exit 0
-                ;;
+    clean)
+        clean
+        exit 0
+        ;;
+     pull)
+        cd "$DATADIR"
+        echo "Pulling fresh data from $(git remote get-url --push origin)..."
+        git pull
+        exit 0
+        ;;
 	vanish|rm)				# unfinished - do not use
 		if [[ "$2" == "today" || "$2" == "tomorrow" || "$2" == "later" ]]; then
 			DAY="$2"
@@ -325,7 +338,6 @@ case "$1" in
 		echo "harharhar"
 		exit 0
 		;;
-
 	--help|-h)
 		show_usage
 		exit 0
