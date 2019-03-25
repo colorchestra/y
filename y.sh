@@ -298,10 +298,6 @@ case "$1" in
 		print_tasks later Later: $RED
 		exit 0
 		;;
-	schedule|sched)
-		"$BASEDIR"/schedule.sh "$@"
-		exit 0
-		;;
 	feierabend)
 		feierabend
 		exit 0
