@@ -256,11 +256,9 @@ case "$1" in
 		fi
 		shift; TASK="$@"
 		if ! [[ -e $DATADIR/today/"$TASK" ]]; then
-			TASK=$(echo "! $TASK")
-		fi
-		if ! [[ -e $DATADIR/today/"$TASK" ]]; then
-			echo "No such task!"
-			exit 1
+			# echo "No such task!" # legacy behavior 
+            add_task today "$TASK"
+#			exit 1
 		fi
 		mv $DATADIR/today/"$TASK" $DATADIR/done/
 		printf \\n
