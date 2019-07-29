@@ -129,12 +129,7 @@ feierabend() {
         	done
 		print_motivation
 	fi
-#	if [[ ! -z "$(ls -A $DATADIR/tomorrow)" ]]; then
-#		mv $DATADIR/tomorrow/* $DATADIR/today/
-#	fi
-    find "$DATADIR/tomorrow" -type f ! -name ".*" -exec mv "{}" "$DATADIR/today/" \; 2> /dev/null
-
-    cd $DATADIR
+    find "$DATADIR/tomorrow" -type f ! -name ".*" -exec mv "{}" "$DATADIR/today/" \; 2> /dev/null # move task from tomorrow to today
 
 # unfinished 'show task age' thing 
 # the idea is to mark all tasks as important that are older than a week. this could be done on feierabend.
@@ -146,6 +141,7 @@ feierabend() {
 #		fi
 #	done	
 
+    cd $DATADIR
 	COMMITMESSAGE="Feierabend $(date '+%F %T')"
 	echo "======== Begin Git log for commit '$COMMITMESSAGE' ========" >> $BASEDIR/git.log
 	git add --all >> $BASEDIR/git.log
