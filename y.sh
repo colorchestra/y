@@ -132,7 +132,7 @@ feierabend() {
 #	if [[ ! -z "$(ls -A $DATADIR/tomorrow)" ]]; then
 #		mv $DATADIR/tomorrow/* $DATADIR/today/
 #	fi
-    find "$DATADIR" -type f ! -name ".*" -exec mv "{}" "$DATADIR/today/" \; 2> /dev/null
+    find "$DATADIR/tomorrow" -type f ! -name ".*" -exec mv "{}" "$DATADIR/today/" \; 2> /dev/null
 
     cd $DATADIR
 
