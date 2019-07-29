@@ -129,10 +129,12 @@ feierabend() {
         	done
 		print_motivation
 	fi
+#	if [[ ! -z "$(ls -A $DATADIR/tomorrow)" ]]; then
+#		mv $DATADIR/tomorrow/* $DATADIR/today/
+#	fi
     find "$DATADIR" -type f ! -name ".*" -exec mv "{}" "$DATADIR/today/" \; 2> /dev/null
-	if [[ ! -z "$(ls -A $DATADIR/tomorrow)" ]]; then
-		mv $DATADIR/tomorrow/* $DATADIR/today/
-	fi
+
+    cd $DATADIR
 
 # unfinished 'show task age' thing 
 # the idea is to mark all tasks as important that are older than a week. this could be done on feierabend.
