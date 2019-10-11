@@ -4,7 +4,7 @@
 
 – [Homer Simpson](https://youtu.be/R_rF4kcqLkI?t=1m50s)
 
-![Screenshot](https://i.imgur.com/9dsqR1r.png)
+![Screenshot](https://i.imgur.com/tMdz2cv.png)
 
 ## Features
 + Ask yourself: "y the hell am I doing this?" with every new task
