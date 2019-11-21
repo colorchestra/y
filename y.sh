@@ -40,7 +40,8 @@ print_tasks() {
 			else
 				OUTPUTSTRING=$(printf "%s%-12s${NC}%s\n" "$3" "$2" "$NAME")
 			fi
-			if [[ -s $f ]]; then
+            # print the first line of a file, but not for 'done' tasks
+			if [[ -s $f ]] && [[ $1 != "done" ]]; then
 				COMMENTSTRING=$(printf "%15s ↳ $(head -1 "$f")")
 			fi
 		fi
