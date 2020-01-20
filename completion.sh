@@ -6,9 +6,9 @@ _y() {
     COMREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    opts="do done procrastinate superprocrastinate prio prioritize vanish rm later feierabend"
+    opts="do done procrastinate proc superprocrastinate prio prioritize vanish rm later feierabend"
     case "${prev}" in
-	    done|procrastinate|superprocrastinate|prio|prioritize)
+	    done|procrastinate|superprocrastinate|proc|prio|prioritize)
 		IFS=$'\n' tmp=( $(compgen -W "$(ls ~/y/data/today)" -- "${COMP_WORDS[$COMP_CWORD]}" ))
                 COMPREPLY=( "${tmp[@]// /\ }" )
 		return 0

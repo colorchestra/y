@@ -283,7 +283,7 @@ case "$1" in
 		prioritize
 		exit 0
 		;;
-	procrastinate)
+	procrastinate|proc)
 		shift; TASK="$@"
 		procrastinate tomorrow
 		exit 0
