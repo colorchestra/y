@@ -346,15 +346,6 @@ case "$1" in
 		procrastinate tomorrow
 		exit 0
 		;;
-	superprocrastinate)
-		shift; TASK="$@"
-		procrastinate later
-		exit 0
-		;;
-	later)
-		print_tasks later Later: $RED
-		exit 0
-		;;
 	feierabend)
 		feierabend
 		exit 0
