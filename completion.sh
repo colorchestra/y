@@ -6,9 +6,9 @@ _y() {
     COMREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    opts="do done procrastinate proc superprocrastinate prio prioritize vanish rm later feierabend start stop"
+    opts="do done procrastinate proc prio prioritize vanish rm feierabend start stop"
     case "${prev}" in
-	    done|procrastinate|superprocrastinate|proc|prio|prioritize|start)
+	    done|procrastinate|proc|prio|prioritize|start)
 		IFS=$'\n' tmp=( $(compgen -W "$(ls ~/y/data/today)" -- "${COMP_WORDS[$COMP_CWORD]}" ))
                 COMPREPLY=( "${tmp[@]// /\ }" )
 		return 0
@@ -19,7 +19,7 @@ _y() {
 		return 0
 		;;
 	vanish)		# extremely ghetto
-		opts="today tomorrow later"
+		opts="today tomorrow"
 		case "${prev}" in
 			today)
 				IFS=$'\n' tmp=( $(compgen -W "$(ls ~/y/data/today)" -- "${COMP_WORDS[$COMP_CWORD]}" ))
