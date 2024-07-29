@@ -187,15 +187,11 @@ feierabend() {
 
 procrastinate() {
 	SOURCEDAY="today"
-	TARGETDAY=$1
-	if [[ ! -e $DATADIR/today/"$TASK" ]] && [[ -e $DATADIR/tomorrow/"$TASK" ]]; then	# if task doesn't exist today but only tomorrow, move from tomorrow to later
-		SOURCEDAY="tomorrow"
-		TARGETDAY="later"
-	fi
+	TARGETDAY="tomorrow"
 	if [[ -e $DATADIR/$SOURCEDAY/"$TASK" ]]; then
 		if [[ ! -e $DATADIR/$TARGETDAY/"$TASK" ]]; then
 			mv $DATADIR/$SOURCEDAY/"$TASK" $DATADIR/$TARGETDAY/"$TASK"
-			echo -e "'$TASK' procrastinated until ${BLUE}$TARGETDAY.${NC}"
+			echo -e "'$TASK' moved to ${BLUE}$TARGETDAY.${NC}"
 			print_demotivation
 		else
 			echo "'$TASK' already exists $TARGETDAY!"
@@ -224,14 +220,12 @@ clean() {
 show_usage() {
 	echo "y - the existentialist task manager"
 	echo "Usage: y -> show all tasks"
-	echo "       y do (today|tomorrow|later]) Fix printer -> Create new task, defaults to 'today'."
+	echo "       y do (today|tomorrow) Fix printer -> Create new task, defaults to 'today'."
 	echo "       y done Fix printer -> mark task as done"
 	echo "       y do Fix printer (if task already exists) -> open task in Vim to add notes"
 	echo "       y procrastinate Fix printer -> move task to tomorrow"
-	echo "       y superprocrastinate Fix printer -> move task to backlog"
 	echo "       y prioritize Fix printer -> toggle mark task as important"
-	echo "       y vanish today|tomorrow|later Fix printer -> delete task"
-	echo "       y later -> take a look at your backlog"
+	echo "       y vanish today|tomorrow Fix printer -> delete task"
 	echo "       y feierabend -> done for the day"
 	exit 0
 }
@@ -343,7 +337,7 @@ case "$1" in
 		;;
 	procrastinate|proc)
 		shift; TASK="$@"
-		procrastinate tomorrow
+		procrastinate
 		exit 0
 		;;
 	feierabend)
