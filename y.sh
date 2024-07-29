@@ -123,7 +123,7 @@ feierabend() {
 	fi	
 	if [[ ! $(find . -maxdepth 1 -type f) ]]; then
 		echo "u did absolutely nothing today."  
-		print_demotivation
+		# print_demotivation
 	else
 		echo -e "${GREEN}here's what u did today${NC}"
 		printf \\n					# show all files from 'done'
@@ -138,7 +138,7 @@ feierabend() {
 				sleep 0.5s
 			fi
         	done
-		print_motivation
+		# print_motivation
 	fi
     find "$DATADIR/tomorrow" -type f ! -name ".*" -exec mv "{}" "$DATADIR/today/" \; 2> /dev/null # move task from tomorrow to today
 
@@ -259,8 +259,8 @@ fi
 # now for "normal mode" where no task has been started
 if [ -z $1 ]; then	# if no arguments given, print all tasks today and tomorrow
 			# use the following syntax: directory name, day in "readable case" and name of color variable
-	HEADLINEOUT=${HEADLINE[$(shuf -i 0-$((${#HEADLINE[@]}-1)) -n 1)]}
-	echo -e ${BOLD}$HEADLINEOUT${NC}
+	#HEADLINEOUT=${HEADLINE[$(shuf -i 0-$((${#HEADLINE[@]}-1)) -n 1)]}
+	#echo -e ${BOLD}$HEADLINEOUT${NC}
 	print_tasks today Today: $GREEN
 	print_tasks tomorrow Tomorrow: $BLUE
 	print_tasks done Done: $YELLOW
@@ -307,7 +307,7 @@ case "$1" in
 		mv $DATADIR/today/"$TASK" $DATADIR/done/
 		printf \\n
 		echo "Done: $TASK."
-		print_motivation
+		# print_motivation
 		;;
 
 	start)
