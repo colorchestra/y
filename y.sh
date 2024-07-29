@@ -20,6 +20,7 @@ if [[ ! "$DOLLARNULL" == *nocolor* ]]; then
 	GREEN='\033[0;32m'
 	YELLOW='\033[1;33m'
 	BLUE='\033[1;34m'
+	MAGENTA='\033[1;35m'
 	BOLD='\033[1m'
 	NC='\033[0m' # No Color
 fi
@@ -86,6 +87,15 @@ add_task() {
 	fi
 	touch $DATADIR/$DAY/"$TASK"		# create task
 	echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
+	}
+
+# helper functions, wow!
+_check_if_task_started() {
+	if [ -z "$( ls -A $DATADIR/started )" ]; then
+	   return 1
+	else
+	   return 0 
+	fi
 	}
 
 prioritize() {
@@ -226,6 +236,33 @@ show_usage() {
 	exit 0
 }
 
+# main script starts here!
+# first: check if work has been started on anything / "focus mode"
+if _check_if_task_started; then
+	if [ -z $1 ]; then
+		echo -e ${BOLD}Focus!${NC}
+		print_tasks started "Currently working on: " $MAGENTA
+		exit 0
+	else
+		case "$1" in 
+			do|edit)
+				echo "tbd: edit tasks or add new ones while in focus mode"
+				exit 1
+				;;
+			stop)
+	 			mv $DATADIR/started/* $DATADIR/today/
+				echo "Stopped working on all tasks."
+				exit 0
+				;;
+			*)	
+				echo "Not a valid command."
+				echo "You're currently working on a task. Use \`y stop\` to stop work on it."
+				exit 1
+		esac
+	fi
+fi
+
+# now for "normal mode" where no task has been started
 if [ -z $1 ]; then	# if no arguments given, print all tasks today and tomorrow
 			# use the following syntax: directory name, day in "readable case" and name of color variable
 	HEADLINEOUT=${HEADLINE[$(shuf -i 0-$((${#HEADLINE[@]}-1)) -n 1)]}
@@ -233,10 +270,11 @@ if [ -z $1 ]; then	# if no arguments given, print all tasks today and tomorrow
 	print_tasks today Today: $GREEN
 	print_tasks tomorrow Tomorrow: $BLUE
 	print_tasks done Done: $YELLOW
-#	print_tasks later Later $RED 	# in case one wants that...
+	#	print_tasks later Later $RED 	# in case one wants that...
 	exit 0
 fi
 
+### "normal" mode without any started tasks
 case "$1" in 
 	do)
 
@@ -276,6 +314,26 @@ case "$1" in
 		printf \\n
 		echo "Done: $TASK."
 		print_motivation
+		;;
+
+	start)
+		if _check_if_task_started; then
+			echo "You're already working on a task!"
+			exit 1
+		fi
+		if [ -z "$2" ]; then
+			echo "Error: no task name given"
+			show_usage
+			exit 1
+		fi
+		shift; TASK="$@"
+		# create and start task if it doesn't exist
+		if ! [[ -e $DATADIR/today/"$TASK" ]]; then
+            add_task today "$TASK"
+		fi
+		mv $DATADIR/today/"$TASK" $DATADIR/started/
+		printf \\n
+		echo "Started work on task $TASK."
 		;;
 
 	prioritize|prio)	# still janky and beta

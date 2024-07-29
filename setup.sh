@@ -50,7 +50,7 @@ case $yn in
 		cd "$DATADIR"
 
 		printf "Creating daily directories...\n"
-		for d in today tomorrow later done archive; do
+		for d in today tomorrow later done archive started; do
 			if ! [[ -d "$d" ]]; then
 				mkdir "$d"
 				printf "    Directory '$d' created.\n"
