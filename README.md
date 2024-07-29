@@ -21,14 +21,11 @@
 
 ## Usage
 + `y` -> show all tasks
-+ `y do (today|tomorrow|later) Fix printer` -> Create new task, defaults to 'today', or move to today if it exists tomorrow or later
++ `y do (today|tomorrow) Fix printer` -> Create new task, defaults to 'today', or move to today if it exists tomorrow
 + `y done Fix printer` -> mark task as done
 + `y do Fix printer` (if task already exists) -> open task in Vim to add notes (absolutely not compatible with any other editor, nu-uh, sorry) (not sorry)
 + `y procrastinate Fix printer` -> move task to tomorrow
-+ `y superprocrastinate Fix printer` -> move task to backlog
 + `y prioritize Fix printer` -> toggle mark task as important
-	
-+ `y later` -> take a look at your backlog
 + `y feierabend` -> done for the day
 
 ## Setup
