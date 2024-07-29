@@ -74,12 +74,10 @@ add_task() {
 		vi $DATADIR/$DAY/"$TASK"
 		exit 0
 	fi
-	for SOURCEDAY in "tomorrow" "later"; do
-		if [[ $DAY == "today" ]] && [[ -e $DATADIR/$SOURCEDAY/"$TASK" ]]; then  # if tasks exists in tomorrow or later, move to today
-			echo "Task exists in $SOURCEDAY - moving it to today"
-			mv $DATADIR/$SOURCEDAY/"$TASK" $DATADIR/today/"$TASK"
-		fi
-	done
+	if [[ $DAY == "today" ]] && [[ -e $DATADIR/tomorrow/"$TASK" ]]; then  # if tasks exists in tomorrow, move to today
+		echo "Task exists tomorrow - moving it to today"
+		mv $DATADIR/tomorrow/"$TASK" $DATADIR/today/"$TASK"
+	fi
 	# experimental ghetto input validation
 	if [[ "$TASK" =~ ^\. ]] || [[ "$TASK" =~ [\*\/\;] ]]; then
 		echo "Error: a task name can not start with a . or contain any of the following characters: * / ;. Exiting."
@@ -203,7 +201,7 @@ procrastinate() {
 clean() {
     read -p "Are you SURE you want to irrecoverably delete ALL of your entries? (yes/no) " cleanyn
     case $cleanyn in
-         [Yy]*) for i in today tomorrow later done; do rm -rf "$DATADIR"/$i/*; done
+         [Yy]*) for i in today tomorrow done archive started; do rm -rf "$DATADIR"/$i/*; done
          rm $BASEDIR/git.log
              echo "All entries deleted."
              exit 0
@@ -240,9 +238,13 @@ if _check_if_task_started; then
 				echo "tbd: edit tasks or add new ones while in focus mode"
 				exit 1
 				;;
+			done)
+				echo "tbd: mark task as done and stop focus mode"
+				exit 1
+				;;
 			stop)
 	 			mv $DATADIR/started/* $DATADIR/today/
-				echo "Stopped working on all tasks."
+				echo "Stopped working on your task."
 				exit 0
 				;;
 			*)	
@@ -261,7 +263,6 @@ if [ -z $1 ]; then	# if no arguments given, print all tasks today and tomorrow
 	print_tasks today Today: $GREEN
 	print_tasks tomorrow Tomorrow: $BLUE
 	print_tasks done Done: $YELLOW
-	#	print_tasks later Later $RED 	# in case one wants that...
 	exit 0
 fi
 
@@ -270,7 +271,7 @@ case "$1" in
 	do)
 
 		case "$2" in
-			today|tomorrow|later)		# parse day
+			today|tomorrow)		# parse day
 				DAY=$2
 				shift; shift
 				add_task $DAY "$@"
@@ -352,7 +353,7 @@ case "$1" in
         exit 0
         ;;
 	vanish|rm)				# unfinished - do not use
-		if [[ "$2" == "today" || "$2" == "tomorrow" || "$2" == "later" ]]; then
+		if [[ "$2" == "today" || "$2" == "tomorrow" ]]; then
 			DAY="$2"
 			shift; shift
 			TASK="$@"

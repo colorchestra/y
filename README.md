@@ -6,6 +6,18 @@
 
 ![Screenshot](https://i.imgur.com/HjUO133.png)
 
+## You're on the v2 development branch!
+Notice: this branch is unstable and likely to change. Here's the v2 roadmap:
+
+- [x] add "focus mode" to keep track of the task you're currently working on
+- [x] remove "later" / "backlog" feature that no one used
+- [x] remove cringey motivation / demotivation / headline
+- [ ] maybe: add new motivation?
+- [ ] maybe: add time tracking? It's almost for free with the inclusion of the start/stop mechanism
+- [ ] refactor entire codebase, make shellcheck report _nothing_
+- [ ] clean up other youth sins
+- [ ] add better comments, remove bad comments
+
 ## Features
 + Ask yourself: "y the hell am I doing this?" with every new task
 + Semi-functional bash completion
