@@ -186,15 +186,12 @@ feierabend() {
 }
 
 procrastinate() {
-	SOURCEDAY="today"
-	TARGETDAY="tomorrow"
-	if [[ -e $DATADIR/$SOURCEDAY/"$TASK" ]]; then
-		if [[ ! -e $DATADIR/$TARGETDAY/"$TASK" ]]; then
-			mv $DATADIR/$SOURCEDAY/"$TASK" $DATADIR/$TARGETDAY/"$TASK"
-			echo -e "'$TASK' moved to ${BLUE}$TARGETDAY.${NC}"
-			print_demotivation
+	if [[ -e $DATADIR/today/"$TASK" ]]; then
+		if [[ ! -e $DATADIR/tomorrow/"$TASK" ]]; then
+			mv $DATADIR/today/"$TASK" $DATADIR/tomorrow/"$TASK"
+			echo -e "'$TASK' moved to ${BLUE}tomorrow${NC}."
 		else
-			echo "'$TASK' already exists $TARGETDAY!"
+			echo "'$TASK' already exists tomorrow!"
 		fi
 	else
 		show_usage
