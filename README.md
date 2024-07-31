@@ -14,6 +14,7 @@ Notice: this branch is unstable and likely to change. Here's the v2 roadmap:
 - [x] remove cringey motivation / demotivation / headline
 - [ ] maybe: add new motivation?
 - [ ] maybe: add time tracking? It's almost for free with the inclusion of the start/stop mechanism
+- [x] read EDITOR variable, default to vi
 - [ ] refactor entire codebase, make shellcheck report _nothing_
 - [ ] clean up other youth sins
 - [ ] add better comments, remove bad comments

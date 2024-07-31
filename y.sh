@@ -70,8 +70,11 @@ add_task() {
 	shift
 	TASK="$@"
 	if [[ -e $DATADIR/$DAY/"$TASK" ]]; then	# open in editor if task already exists
-		echo "Task '$TASK' exists, opening in editor..."
-		vi $DATADIR/$DAY/"$TASK"
+		if [[ -z $EDITOR ]]; then
+			EDITOR=vi
+		fi
+		echo "Task '$TASK' exists, opening in $EDITOR..."
+		$EDITOR $DATADIR/$DAY/"$TASK"
 		exit 0
 	fi
 	if [[ $DAY == "today" ]] && [[ -e $DATADIR/tomorrow/"$TASK" ]]; then  # if tasks exists in tomorrow, move to today
