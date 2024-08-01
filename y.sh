@@ -123,17 +123,23 @@ prioritize() {
 	fi
 }
 
-feierabend() {
+#feierabend() {
+next_day() {
+	# $1 for "today" or "yesterday"
 	cd $DATADIR/done
-	TODAYSDATE=$(date --iso-8601)
-	if [[ ! -d $DATADIR/archive/$TODAYSDATE ]]; then
-		mkdir $DATADIR/archive/$TODAYSDATE
+	if [[ "$1" == "yesterday" ]] then
+		DATE_OF_WORKDAY=$(date --date yesterday --iso-8601)
+	else
+		DATE_OF_WORKDAY=$(date --iso-8601)
+	fi
+	if [[ ! -d $DATADIR/archive/$DATE_OF_WORKDAY ]]; then
+		mkdir $DATADIR/archive/$DATE_OF_WORKDAY
 	fi	
 	if [[ ! $(find . -maxdepth 1 -type f) ]]; then
 		echo "u did absolutely nothing $1."  
 		print_demotivation
 	else
-		echo -e "${GREEN}here's what u did today${NC}"
+		echo -e "${GREEN}here's what u did ${1}${NC}"
 		printf \\n					# show all files from 'done'
         	for f in *; do
 			if ! [[ -d $f ]]; then
@@ -142,26 +148,16 @@ feierabend() {
 					sleep 0.05
 				done
 				printf \\n
-				mv "$f" $DATADIR/archive/$TODAYSDATE
+				mv "$f" $DATADIR/archive/$DATE_OF_WORKDAY
 				sleep 0.5s
 			fi
         	done
-		# print_motivation
+		print_motivation
 	fi
     find "$DATADIR/tomorrow" -type f ! -name ".*" -exec mv "{}" "$DATADIR/today/" \; 2> /dev/null # move task from tomorrow to today
 
-# unfinished 'show task age' thing 
-# the idea is to mark all tasks as important that are older than a week. this could be done on feierabend.
-#	CURRTIME=$(date +%s)
-#	for f in $DATADIR/today/*; do
-#		if [[ ! "$f" == "! *" ]]; then
-#			CHANGETIME=$(stat -c %Y "$f")
-#			echo "last change: $CHANGETIME, now: $CURRTIME"
-#		fi
-#	done	
-
     cd $DATADIR
-	COMMITMESSAGE="Feierabend $(date '+%F %T')"
+	COMMITMESSAGE="End of day $(date '+%F %T')"
 	echo "======== Begin Git log for commit '$COMMITMESSAGE' ========" >> $BASEDIR/git.log
 	git add --all >> $BASEDIR/git.log
 	printf "+ git commit... "
@@ -189,8 +185,12 @@ feierabend() {
 	fi
 	echo "========== End Git log for commit '$COMMITMESSAGE' ========" >> $BASEDIR/git.log
 	printf \\n
-	echo "Remember to stop your timetracking."
-	echo "Good night!"
+	if [[ "$1" == "yesterday" ]] then
+		echo "Have a great day! 🌞"
+	else
+		echo "Remember to stop your timetracking."
+		echo "Good night!"
+	fi
 }
 
 procrastinate() {
@@ -231,6 +231,7 @@ show_usage() {
 	echo "       y procrastinate Fix printer -> move task to tomorrow"
 	echo "       y prioritize Fix printer -> toggle mark task as important"
 	echo "       y vanish today|tomorrow Fix printer -> delete task"
+	echo "       y gumo -> starting the day"
 	echo "       y feierabend -> done for the day"
 	exit 0
 }
@@ -351,7 +352,11 @@ case "$1" in
 		exit 0
 		;;
 	feierabend)
-		feierabend
+		next_day today
+		exit 0
+		;;
+	gumo)
+		next_day yesterday
 		exit 0
 		;;
     clean)
