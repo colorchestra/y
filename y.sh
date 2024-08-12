@@ -189,7 +189,7 @@ next_day() {
 		echo "Have a great day! 🌞"
 	else
 		echo "Remember to stop your timetracking."
-		echo "Good night!"
+		echo "Good night! 🌙"
 	fi
 }
 
@@ -313,7 +313,8 @@ case "$1" in
 		fi
 		shift; TASK="$@"
 		if ! [[ -e $DATADIR/today/"$TASK" ]]; then
-            add_task today "$TASK"
+			echo "Error: task '"${TASK}"' doesn't exist"
+			exit 1
 		fi
 		mv $DATADIR/today/"$TASK" $DATADIR/done/
 		printf \\n
