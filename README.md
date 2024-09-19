@@ -14,11 +14,15 @@ Notice: this branch is unstable and likely to change. Here's the v2 roadmap:
 - [x] remove cringey motivation / demotivation / headline
 - [ ] maybe: add new motivation?
 - [ ] maybe: add time tracking? It's almost for free with the inclusion of the start/stop mechanism
+- [x] remove instant creation of non-existant tasks with "done"
 - [x] read EDITOR variable, default to vi
-- [ ] add GuMo syntax to Feierabend
+- [x] add GuMo syntax to Feierabend
 - [ ] refactor entire codebase, make shellcheck report _nothing_
 - [ ] clean up other youth sins
 - [ ] add better comments, remove bad comments
+- [ ] rename y.sh to y
+- [ ] move things to proper directories (~/.local/bin, ~/.config/something?)
+- [ ] fix vanish/rm
 
 ## Features
 + Ask yourself: "y the hell am I doing this?" with every new task
