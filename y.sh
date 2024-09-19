@@ -317,7 +317,6 @@ case "$1" in
 			exit 1
 		fi
 		mv $DATADIR/today/"$TASK" $DATADIR/done/
-		printf \\n
 		echo "Done: $TASK."
 		print_motivation
 		;;
@@ -338,11 +337,9 @@ case "$1" in
             add_task today "$TASK"
 		fi
 		mv $DATADIR/today/"$TASK" $DATADIR/started/
-		printf \\n
 		echo "Started work on task $TASK."
 		;;
-
-	prioritize|prio)	# still janky and beta
+	prioritize|prio)
 		shift; TASK="$@"
 		prioritize
 		exit 0
