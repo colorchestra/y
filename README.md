@@ -17,12 +17,14 @@ Notice: this branch is unstable and likely to change. Here's the v2 roadmap:
 - [x] remove instant creation of non-existant tasks with "done"
 - [x] read EDITOR variable, default to vi
 - [x] add GuMo syntax to Feierabend
-- [ ] refactor entire codebase, make shellcheck report _nothing_
+- [x] refactor entire codebase, make shellcheck report _nothing_
+- [ ] fix remaining shellcheck todos
 - [ ] clean up other youth sins
 - [ ] add better comments, remove bad comments
 - [ ] rename y.sh to y
 - [ ] move things to proper directories (~/.local/bin, ~/.config/something?)
 - [ ] fix vanish/rm
+- [ ] fix behaviour of deprioritizing (make callable without !)
 
 ## Features
 + Ask yourself: "y the hell am I doing this?" with every new task

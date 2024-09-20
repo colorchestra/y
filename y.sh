@@ -8,7 +8,7 @@ HEADLINE=("Frisch ans Werk, Freund!" "Morgenstund hat Gold im Mund!" "Wer wagt, 
 BASEDIR=~/y
 DEFAULTDATADIR=$BASEDIR/data
 
-if [ -z $DATADIR ]; then
+if [ -z "$DATADIR" ]; then
 	DATADIR="$DEFAULTDATADIR"
 fi	
 
@@ -35,13 +35,13 @@ print_tasks() {
 		echo "Directory '$1' not found! Exiting."
 		exit 1
 	fi
-	cd $DATADIR/$1
+	cd "$DATADIR"/"$1" || exit 1
 	for f in *; do
 		NAME=$f
 		COMMENTSTRING=""
 		if [[ ! -d $f ]]; then
 			if [[ $NAME == "! "* ]]; then
-				NAME=$(echo $NAME | cut -c3-)
+				NAME=$(echo "$NAME" | cut -c3-)
 				OUTPUTSTRING=$(printf "%s%-10s${RED}! ${NC}%s\n" "$3" "$2" "$NAME")
 			else
 				OUTPUTSTRING=$(printf "%s%-12s${NC}%s\n" "$3" "$2" "$NAME")
@@ -52,15 +52,15 @@ print_tasks() {
 			fi
 		fi
 		echo -e "$OUTPUTSTRING"
-		if [ ! -z "$COMMENTSTRING" ]; then echo -e "$COMMENTSTRING"; fi
+		if [ -n "$COMMENTSTRING" ]; then echo -e "$COMMENTSTRING"; fi
 	done
 }
 
 print_motivation() {
-	if [[ $CRINGE_MODE != 0 ]] then
+	if [[ $CRINGE_MODE != 0 ]]; then
 		MOTIVOUT=${MOTIVATION[$(shuf -i 0-$((${#MOTIVATION[@]}-1)) -n 1)]}
 		printf \\n
-		echo -e ${YELLOW}$MOTIVOUT${NC}
+		echo -e "${YELLOW}""$MOTIVOUT""${NC}"
 		printf \\n
 	fi
 }
@@ -68,38 +68,38 @@ print_motivation() {
 print_demotivation() {
 	DEMOTIVOUT=${DEMOTIVATION[$(shuf -i 0-$((${#DEMOTIVATION[@]}-1)) -n 1)]}
 	printf \\n
-	echo -e ${RED}$DEMOTIVOUT${NC}
+	echo -e "${RED}""$DEMOTIVOUT""${NC}"
 	printf \\n
 }
 
 add_task() {
 	DAY="$1"
 	shift
-	TASK="$@"
+	TASK="$*"
 	if [[ -e $DATADIR/$DAY/"$TASK" ]]; then	# open in editor if task already exists
 		if [[ -z $EDITOR ]]; then
-			EDITOR=vi
+			export EDITOR=vi
 		fi
 		echo "Task '$TASK' exists, opening in $EDITOR..."
-		$EDITOR $DATADIR/$DAY/"$TASK"
+		$EDITOR "$DATADIR"/"$DAY"/"$TASK"
 		exit 0
 	fi
 	if [[ $DAY == "today" ]] && [[ -e $DATADIR/tomorrow/"$TASK" ]]; then  # if tasks exists in tomorrow, move to today
 		echo "Task exists tomorrow - moving it to today"
-		mv $DATADIR/tomorrow/"$TASK" $DATADIR/today/"$TASK"
+		mv "$DATADIR"/tomorrow/"$TASK" "$DATADIR"/today/"$TASK"
 	fi
 	# experimental ghetto input validation
 	if [[ "$TASK" =~ ^\. ]] || [[ "$TASK" =~ [\*\/\;] ]]; then
 		echo "Error: a task name can not start with a . or contain any of the following characters: * / ;. Exiting."
 		exit 1
 	fi
-	touch $DATADIR/$DAY/"$TASK"		# create task
+	touch "$DATADIR"/"$DAY"/"$TASK"		# create task
 	echo -e "'$TASK' added for ${GREEN}$DAY!${NC}"
 	}
 
 # helper functions, wow!
 _check_if_task_started() {
-	if [ -z "$( ls -A $DATADIR/started )" ]; then
+	if [ -z "$(ls -A "$DATADIR"/started)" ]; then
 	   return 1
 	else
 	   return 0 
@@ -134,30 +134,29 @@ prioritize() {
 		exit 1
 	else
 		if [[ "$TASK" == "! "* ]]; then
-			mv "$DATADIR/today/$TASK" "$DATADIR/today/$(echo $TASK | cut -c3-)"
-			echo "De-prioritized task '$(echo $TASK | cut -c3-)'."
-			exit 0
+			mv "$DATADIR"/today/"$TASK" "$DATADIR"/today/"$(echo "$TASK" | cut -c3-)"
+			echo "De-prioritized task '$(echo "$TASK" | cut -c3-)'."
 		else
-			mv "$DATADIR/today/$TASK" "$DATADIR/today/! $TASK"
+		 # TODO can this be nicened up without a shellcheck finding?
+			mv "$DATADIR"/today/"$TASK" "$DATADIR"/today/!\ "$TASK"
 			echo "Prioritized task '! $TASK'."
-			exit
 		fi
 	fi
 }
 
-#feierabend() {
 next_day() {
 	# $1 for "today" or "yesterday"
-	cd $DATADIR/done
-	if [[ "$1" == "yesterday" ]] then
-		DATE_OF_WORKDAY=$(date --date yesterday --iso-8601)
+	cd "$DATADIR"/done || exit 1
+	if [[ "$1" == "yesterday" ]]; then
+		DATE_OF_WORKDAY="$(date --date yesterday --iso-8601)"
 	else
-		DATE_OF_WORKDAY=$(date --iso-8601)
+		DATE_OF_WORKDAY="$(date --iso-8601)"
 	fi
-	if [[ ! -d $DATADIR/archive/$DATE_OF_WORKDAY ]]; then
-		mkdir $DATADIR/archive/$DATE_OF_WORKDAY
+	if [[ ! -d "$DATADIR"/archive/"$DATE_OF_WORKDAY" ]]; then
+		mkdir "$DATADIR"/archive/"$DATE_OF_WORKDAY"
 	fi	
-	if [[ ! $(find . -maxdepth 1 -type f) ]]; then
+	# TODO: find here vs ls above?
+	if [[ ! "$(find . -maxdepth 1 -type f)" ]]; then
 		echo "u did absolutely nothing $1."  
 		print_demotivation
 	else
@@ -166,11 +165,13 @@ next_day() {
         	for f in *; do
 			if ! [[ -d $f ]]; then
 				for (( c=0; c < ${#f}; c++ )); do	# super flashy magic effect thingy
+				 # TODO shellcheck
+				 # shellcheck disable=SC2059
 					printf "${f:$c:1}"
 					sleep 0.05
 				done
 				printf \\n
-				mv "$f" $DATADIR/archive/$DATE_OF_WORKDAY
+				mv "$f" "$DATADIR"/archive/"$DATE_OF_WORKDAY"
 				sleep 0.5s
 			fi
         	done
@@ -178,12 +179,14 @@ next_day() {
 	fi
     find "$DATADIR/tomorrow" -type f ! -name ".*" -exec mv "{}" "$DATADIR/today/" \; 2> /dev/null # move task from tomorrow to today
 
-    cd $DATADIR
+    cd "$DATADIR" || exit 1
 	COMMITMESSAGE="End of day $(date '+%F %T')"
 	echo "======== Begin Git log for commit '$COMMITMESSAGE' ========" >> $BASEDIR/git.log
 	git add --all >> $BASEDIR/git.log
 	printf "+ git commit... "
 	COMMITOUTPUT=$(git commit -m "$COMMITMESSAGE")
+	# TODO
+	# shellcheck disable=SC2181
 	if [[ $? -eq 0 ]]; then
 		printf "${GREEN}%12s${NC}\n" "Successful"
 		echo "$COMMITOUTPUT" >> $BASEDIR/git.log
@@ -207,7 +210,7 @@ next_day() {
 	fi
 	echo "========== End Git log for commit '$COMMITMESSAGE' ========" >> $BASEDIR/git.log
 	printf \\n
-	if [[ "$1" == "yesterday" ]] then
+	if [[ "$1" == "yesterday" ]]; then
 		echo "Have a great day! 🌞"
 	else
 		echo "Remember to stop your timetracking."
@@ -218,25 +221,23 @@ next_day() {
 procrastinate() {
 	if [[ -e $DATADIR/today/"$TASK" ]]; then
 		if [[ ! -e $DATADIR/tomorrow/"$TASK" ]]; then
-			mv $DATADIR/today/"$TASK" $DATADIR/tomorrow/"$TASK"
+			mv "$DATADIR"/today/"$TASK" "$DATADIR"/tomorrow/"$TASK"
 			echo -e "'$TASK' moved to ${BLUE}tomorrow${NC}."
 		else
 			echo "'$TASK' already exists tomorrow!"
 		fi
 	else
 		show_usage
+		exit 1
 	fi	
-	exit 0
-
 }
 
 clean() {
-    read -p "Are you SURE you want to irrecoverably delete ALL of your entries? (yes/no) " cleanyn
+    read -rp "Are you SURE you want to irrecoverably delete ALL of your entries? (yes/no) " cleanyn
     case $cleanyn in
-         [Yy]*) for i in today tomorrow done archive started; do rm -rf "$DATADIR"/$i/*; done
+         [Yy]*) for i in 'today' 'tomorrow' 'done' 'archive' 'started'; do rm -rf "${DATADIR:?}"/"${i}"/*; done
          rm $BASEDIR/git.log
              echo "All entries deleted."
-             exit 0
              ;;
          *) echo "Aborting."
             exit 1
@@ -255,15 +256,14 @@ show_usage() {
 	echo "       y vanish today|tomorrow Fix printer -> delete task"
 	echo "       y gumo -> starting the day"
 	echo "       y feierabend -> done for the day"
-	exit 0
 }
 
 # main script starts here!
 # first: check if work has been started on anything / "focus mode"
 if _check_if_task_started; then
-	if [ -z $1 ]; then
-		echo -e ${BOLD}Focus!${NC}
-		print_tasks started "Currently working on: " $MAGENTA
+	if [ -z "$1" ]; then
+		echo -e "${BOLD}Focus!${NC}"
+		print_tasks started "Currently working on: " "$MAGENTA"
 		exit 0
 	else
 		case "$1" in 
@@ -276,7 +276,7 @@ if _check_if_task_started; then
 				exit 1
 				;;
 			stop)
-	 			mv $DATADIR/started/* $DATADIR/today/
+	 			mv "$DATADIR"/started/* "$DATADIR"/today/
 				echo "Stopped working on your task."
 				exit 0
 				;;
@@ -289,15 +289,15 @@ if _check_if_task_started; then
 fi
 
 # now for "normal mode" where no task has been started
-if [ -z $1 ]; then	# if no arguments given, print all tasks today and tomorrow
+if [ -z "$1" ]; then	# if no arguments given, print all tasks today and tomorrow
 			# use the following syntax: directory name, day in "readable case" and name of color variable
-	if [[ $CRINGE_MODE != 0 ]] then
+	if [[ "$CRINGE_MODE" != 0 ]]; then
 		HEADLINEOUT=${HEADLINE[$(shuf -i 0-$((${#HEADLINE[@]}-1)) -n 1)]}
-		echo -e ${BOLD}$HEADLINEOUT${NC}
+		echo -e "${BOLD}$HEADLINEOUT${NC}"
 	fi
-	print_tasks today Today: $GREEN
-	print_tasks tomorrow Tomorrow: $BLUE
-	print_tasks done Done: $YELLOW
+	print_tasks 'today' 'Today:' "$GREEN"
+	print_tasks 'tomorrow' 'Tomorrow:' "$BLUE"
+	print_tasks 'done' 'Done:' "$YELLOW"
 	exit 0
 fi
 
@@ -309,7 +309,7 @@ case "$1" in
 			today|tomorrow)		# parse day
 				DAY=$2
 				shift; shift
-				add_task $DAY "$@"
+				add_task "$DAY" "$@"
 				exit 0
 				;;
 
@@ -350,21 +350,21 @@ case "$1" in
 			show_usage
 			exit 1
 		fi
-		shift; TASK="$@"
+		shift; TASK="$*"
 		# create and start task if it doesn't exist
 		if ! [[ -e $DATADIR/today/"$TASK" ]]; then
             add_task today "$TASK"
 		fi
-		mv $DATADIR/today/"$TASK" $DATADIR/started/
+		mv "$DATADIR"/today/"$TASK" "$DATADIR"/started/
 		echo "Started work on task $TASK."
 		;;
 	prioritize|prio)
-		shift; TASK="$@"
+		shift; TASK="$*"
 		prioritize
 		exit 0
 		;;
 	procrastinate|proc)
-		shift; TASK="$@"
+		shift; TASK="$*"
 		procrastinate
 		exit 0
 		;;
@@ -381,32 +381,29 @@ case "$1" in
         exit 0
         ;;
      pull)
-        cd "$DATADIR"
+        cd "$DATADIR" || exit 1
         echo "Pulling fresh data from $(git remote get-url --push origin)..."
         git pull
         exit 0
         ;;
-	vanish|rm)				# unfinished - do not use
+	vanish|rm)
 		if [[ "$2" == "today" || "$2" == "tomorrow" ]]; then
 			DAY="$2"
 			shift; shift
-			TASK="$@"
-			cd "$DATADIR"/"$DAY"
-			rm "$TASK"
-			if [[ $? -eq 0 ]]; then
-				echo -e "Task '$TASK' has vanished."
-			else	# debug
-				echo "rm has returned non-zero"
-			fi
+		else
+			DAY="today"
+			shift
+		fi
+		TASK="$*"
+		cd "$DATADIR"/"$DAY" || exit 1
+
+		if rm "$TASK"; then
+			echo -e "Task '$TASK' has vanished."
 			exit 0
 		else
-			echo "nö"
+			echo "Removing task failed!"
 			exit 1
 		fi
-		cd $DATADIR/today/
-		rm "$@"
-		echo "harharhar"
-		exit 0
 		;;
 	--help|-h)
 		show_usage

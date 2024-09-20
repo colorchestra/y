@@ -17,22 +17,20 @@ sed -i '/y\/completion.sh/d' ~/.bashrc
 # todo: feedback
 
 printf "Writing new aliases to .bashrc... "
-echo "alias y='$BASEDIR/y.sh'" >> ~/.bashrc
-if [ $? -eq 0 ]; then
+if echo "alias y='$BASEDIR/y.sh'" >> ~/.bashrc; then
 	printf "Successful.\n"
 else
 	printf "Error!\n"
 fi
 
 printf "Writing completion stuff to .bashrc... "
-echo "source $BASEDIR/completion.sh" >> ~/.bashrc
-if [ $? -eq 0 ]; then
+if echo "source $BASEDIR/completion.sh" >> ~/.bashrc; then
 	printf "Successful.\n"
 else
 	printf "Error!\n"
 fi
 
-read -p "Do you have an existing y data directory, e.g. in a Git repo? (yes/no) " yn
+read -rp "Do you have an existing y data directory, e.g. in a Git repo? (yes/no) " yn
 case $yn in
 	[Yy]* ) echo "Please manually copy/clone your data directory now."		# to do: automatically clone if repo link is inserted
 		;;
@@ -47,10 +45,10 @@ case $yn in
 			printf "Directory already exists!\n"
 		fi
 		
-		cd "$DATADIR"
+		cd "$DATADIR" || exit 1
 
 		printf "Creating daily directories...\n"
-		for d in today tomorrow done archive started; do
+		for d in 'today' 'tomorrow' 'done' 'archive' 'started'; do
 			if ! [[ -d "$d" ]]; then
 				mkdir "$d"
 				printf "    Directory '$d' created.\n"
@@ -60,7 +58,7 @@ case $yn in
 			fi
 		done
 		git init
-		cd "$BASEDIR"
+		cd "$BASEDIR" || exit 1
 		;;
 esac
 
