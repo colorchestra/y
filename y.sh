@@ -106,6 +106,28 @@ _check_if_task_started() {
 	fi
 	}
 
+_check_if_task_exists() {
+	# $1 is the day, rest is task name
+	DAY="$1"
+	shift
+	TASK="$*"
+
+	if [[ -e "$DATADIR"/"$DAY"/"$TASK" ]]; then
+	   return 0
+	else
+	   return 1 
+	fi
+}
+
+_error_task_doesnt_exist() {
+	if [ -z "$1" ]; then
+		echo -e "${RED}Error${NC}: task doesn't exist!"
+	else
+		echo -e "${RED}Error${NC}: task '$*' doesn't exist!"
+	fi
+	exit 1
+}
+
 prioritize() {
 	if ! [[ -e $DATADIR/today/"$TASK" ]]; then
 		echo "No such task!"
@@ -311,12 +333,9 @@ case "$1" in
 			show_usage
 			exit 1
 		fi
-		shift; TASK="$@"
-		if ! [[ -e $DATADIR/today/"$TASK" ]]; then
-			echo "Error: task '"${TASK}"' doesn't exist"
-			exit 1
-		fi
-		mv $DATADIR/today/"$TASK" $DATADIR/done/
+		shift; TASK="$*"
+		_check_if_task_exists 'today' "$TASK" || _error_task_doesnt_exist "$TASK"
+		mv "$DATADIR"/today/"$TASK" "$DATADIR"/done/
 		echo "Done: $TASK."
 		print_motivation
 		;;
