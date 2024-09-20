@@ -76,7 +76,7 @@ add_task() {
 	DAY="$1"
 	shift
 	TASK="$*"
-	if [[ -e $DATADIR/$DAY/"$TASK" ]]; then	# open in editor if task already exists
+	if _check_if_task_exists "$DAY" "$TASK"; then	# open in editor if task already exists
 		if [[ -z $EDITOR ]]; then
 			export EDITOR=vi
 		fi
@@ -84,11 +84,11 @@ add_task() {
 		$EDITOR "$DATADIR"/"$DAY"/"$TASK"
 		exit 0
 	fi
-	if [[ $DAY == "today" ]] && [[ -e $DATADIR/tomorrow/"$TASK" ]]; then  # if tasks exists in tomorrow, move to today
+	if [[ $DAY == "today" ]] && _check_if_task_exists 'tomorrow' "$TASK"; then  # if tasks exists in tomorrow, move to today
 		echo "Task exists tomorrow - moving it to today"
 		mv "$DATADIR"/tomorrow/"$TASK" "$DATADIR"/today/"$TASK"
 	fi
-	# experimental ghetto input validation
+	# ghetto input validation
 	if [[ "$TASK" =~ ^\. ]] || [[ "$TASK" =~ [\*\/\;] ]]; then
 		echo "Error: a task name can not start with a . or contain any of the following characters: * / ;. Exiting."
 		exit 1
@@ -108,11 +108,11 @@ _check_if_task_started() {
 
 _check_if_task_exists() {
 	# $1 is the day, rest is task name
-	DAY="$1"
+	day_to_check="$1"
 	shift
-	TASK="$*"
+	task_to_check="$*"
 
-	if [[ -e "$DATADIR"/"$DAY"/"$TASK" ]]; then
+	if [[ -e "$DATADIR"/"$day_to_check"/"$task_to_check" ]]; then
 	   return 0
 	else
 	   return 1 
@@ -129,18 +129,13 @@ _error_task_doesnt_exist() {
 }
 
 prioritize() {
-	if ! [[ -e $DATADIR/today/"$TASK" ]]; then
-		echo "No such task!"
-		exit 1
+	_check_if_task_exists 'today' "$TASK" || _error_task_doesnt_exist "$TASK"
+	if [[ "$TASK" == "! "* ]]; then
+		mv "$DATADIR"/today/"$TASK" "$DATADIR"/today/"$(echo "$TASK" | cut -c3-)"
+		echo "De-prioritized task '$(echo "$TASK" | cut -c3-)'."
 	else
-		if [[ "$TASK" == "! "* ]]; then
-			mv "$DATADIR"/today/"$TASK" "$DATADIR"/today/"$(echo "$TASK" | cut -c3-)"
-			echo "De-prioritized task '$(echo "$TASK" | cut -c3-)'."
-		else
-		 # TODO can this be nicened up without a shellcheck finding?
-			mv "$DATADIR"/today/"$TASK" "$DATADIR"/today/!\ "$TASK"
-			echo "Prioritized task '! $TASK'."
-		fi
+		mv "$DATADIR"/today/"$TASK" "$DATADIR"/today/!\ "$TASK"
+		echo "Prioritized task '! $TASK'."
 	fi
 }
 
@@ -219,17 +214,13 @@ next_day() {
 }
 
 procrastinate() {
-	if [[ -e $DATADIR/today/"$TASK" ]]; then
-		if [[ ! -e $DATADIR/tomorrow/"$TASK" ]]; then
-			mv "$DATADIR"/today/"$TASK" "$DATADIR"/tomorrow/"$TASK"
-			echo -e "'$TASK' moved to ${BLUE}tomorrow${NC}."
-		else
-			echo "'$TASK' already exists tomorrow!"
-		fi
+	_check_if_task_exists 'today' "$TASK" || _error_task_doesnt_exist "$TASK"
+	if ! _check_if_task_exists 'tomorrow' "$TASK"; then
+		mv "$DATADIR"/today/"$TASK" "$DATADIR"/tomorrow/"$TASK"
+		echo -e "'$TASK' moved to ${BLUE}tomorrow${NC}."
 	else
-		show_usage
-		exit 1
-	fi	
+		echo "'$TASK' already exists tomorrow!"
+	fi
 }
 
 clean() {
@@ -352,9 +343,8 @@ case "$1" in
 		fi
 		shift; TASK="$*"
 		# create and start task if it doesn't exist
-		if ! [[ -e $DATADIR/today/"$TASK" ]]; then
-            add_task today "$TASK"
-		fi
+		_check_if_task_exists 'today' "$TASK" || add_task 'today' "$TASK"
+
 		mv "$DATADIR"/today/"$TASK" "$DATADIR"/started/
 		echo "Started work on task $TASK."
 		;;
