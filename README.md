@@ -12,8 +12,8 @@ Notice: this branch is unstable and likely to change. Here's the v2 roadmap:
 - [x] add "focus mode" to keep track of the task you're currently working on
 - [x] remove "later" / "backlog" feature that no one used
 - [x] remove cringey motivation / demotivation / headline
-- [ ] maybe: add new motivation?
-- [ ] maybe: add time tracking? It's almost for free with the inclusion of the start/stop mechanism
+- [x] maybe: add new motivation?
+- [ ] ~~maybe: add time tracking? It's almost for free with the inclusion of the start/stop mechanism~~
 - [x] remove instant creation of non-existant tasks with "done"
 - [x] read EDITOR variable, default to vi
 - [x] add GuMo syntax to Feierabend
@@ -23,8 +23,12 @@ Notice: this branch is unstable and likely to change. Here's the v2 roadmap:
 - [ ] add better comments, remove bad comments
 - [ ] rename y.sh to y
 - [ ] move things to proper directories (~/.local/bin, ~/.config/something?)
-- [ ] fix vanish/rm
+- [x] fix vanish/rm
 - [ ] fix behaviour of deprioritizing (make callable without !)
+- [ ] rename branch to main
+- [ ] new screenshot
+- [ ] fix rm/vanish completion (borken)
+- [ ] make installable to any directory, with symlink from ~/.local/bin
 
 ## Features
 + Ask yourself: "y the hell am I doing this?" with every new task

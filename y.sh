@@ -1,18 +1,13 @@
 #!/bin/bash
 
 # Constants
-MOTIVATION=("u should be proud of urself" "u r da man, man" "u da best" "look at u go" "nice work, yay" "u amazinggggggg" "u did good, kid" "this shit is bananas, B-A-N-A-N-A-S!" "the best there ever was" "u the real mvp" "now go treat yoself")
-DEMOTIVATION=("u lazy piece of shit" "weeeell done *slow clap*" "son i am disappoint" "lauch" "u suck" "all you had to do was follow the damn train!" "the fuck is wrong with you" "try harder, pal" "congratulations on your spectacular failure" "hope ur proud of urself")
-HEADLINE=("Frisch ans Werk, Freund!" "Morgenstund hat Gold im Mund!" "Wer wagt, gewinnt!" "Müßiggang ist aller Laster Anfang!" "Wer wagt, gewinnt!" "Den Tüchtigen gehört die Welt!" "Gib jedem Tag die Chance, der produktivste deines Lebens zu werden!" "Ich arbeite gern für meinen Konzern!" "You gotta do what you gotta do 👍" "Wir haben uns alle lieb im Betrieb!" "Der frühe Vogel fängt den Wurm!" "Die schönste Zeit... ist die Arbeit!" "Frage nicht, was dein Arbeitsplatz für dich tun kann - frage, was du für deinen Arbeitsplatz tun kannst!" "Die schönste Musik? - Der Sound der Fabrik!")
-
 BASEDIR=~/y
 DEFAULTDATADIR=$BASEDIR/data
+CRINGE_MODE=0
 
 if [ -z "$DATADIR" ]; then
 	DATADIR="$DEFAULTDATADIR"
 fi	
-
-# echo "DEBUG: current DATADIR: $DATADIR"
 
 DOLLARNULL=$(echo "$0" | sed 's/.*\///')
 if [[ ! "$DOLLARNULL" == *nocolor* ]]; then
@@ -25,10 +20,6 @@ if [[ ! "$DOLLARNULL" == *nocolor* ]]; then
 	BOLD='\033[1m'
 	NC='\033[0m' # No Color
 fi
-
-# Configuration
-## turn on cringe mode if you want the cringey motivational thingsies
-CRINGE_MODE=0
 
 print_tasks() {
 	if [[ ! -d "$DATADIR/$1" ]]; then
@@ -56,22 +47,6 @@ print_tasks() {
 	done
 }
 
-print_motivation() {
-	if [[ $CRINGE_MODE != 0 ]]; then
-		MOTIVOUT=${MOTIVATION[$(shuf -i 0-$((${#MOTIVATION[@]}-1)) -n 1)]}
-		printf \\n
-		echo -e "${YELLOW}""$MOTIVOUT""${NC}"
-		printf \\n
-	fi
-}
-
-print_demotivation() {
-	DEMOTIVOUT=${DEMOTIVATION[$(shuf -i 0-$((${#DEMOTIVATION[@]}-1)) -n 1)]}
-	printf \\n
-	echo -e "${RED}""$DEMOTIVOUT""${NC}"
-	printf \\n
-}
-
 add_task() {
 	DAY="$1"
 	shift
@@ -88,7 +63,7 @@ add_task() {
 		echo "Task exists tomorrow - moving it to today"
 		mv "$DATADIR"/tomorrow/"$TASK" "$DATADIR"/today/"$TASK"
 	fi
-	# ghetto input validation
+	# input validation should be good enough...
 	if [[ "$TASK" =~ ^\. ]] || [[ "$TASK" =~ [\*\/\;] ]]; then
 		echo "Error: a task name can not start with a . or contain any of the following characters: * / ;. Exiting."
 		exit 1
@@ -153,7 +128,6 @@ next_day() {
 	# TODO: find here vs ls above?
 	if [[ ! "$(find . -maxdepth 1 -type f)" ]]; then
 		echo "u did absolutely nothing $1."  
-		print_demotivation
 	else
 		echo -e "${GREEN}here's what u did ${1}${NC}"
 		printf \\n					# show all files from 'done'
@@ -170,7 +144,7 @@ next_day() {
 				sleep 0.5s
 			fi
         	done
-		print_motivation
+		echo -e "${YELLOW}Well done! 😊${NC}"
 	fi
     find "$DATADIR/tomorrow" -type f ! -name ".*" -exec mv "{}" "$DATADIR/today/" \; 2> /dev/null # move task from tomorrow to today
 
@@ -328,7 +302,6 @@ case "$1" in
 		_check_if_task_exists 'today' "$TASK" || _error_task_doesnt_exist "$TASK"
 		mv "$DATADIR"/today/"$TASK" "$DATADIR"/done/
 		echo "Done: $TASK."
-		print_motivation
 		;;
 
 	start)
