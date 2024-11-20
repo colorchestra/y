@@ -2,12 +2,19 @@
 
 # Constants
 BASEDIR=~/y
-DEFAULTDATADIR=$BASEDIR/data
-CRINGE_MODE=0
 
+# find the data directory
+for dir in "$HOME/.local/share/y" "$HOME/y/data"; do
+	if [ -d "$dir" ]; then
+		DATADIR="$dir"
+		echo "Found datadir: $dir"
+		break
+	fi
+done
 if [ -z "$DATADIR" ]; then
-	DATADIR="$DEFAULTDATADIR"
-fi	
+	echo "No data directory could be found! Aborting."
+	exit 1
+fi
 
 DOLLARNULL=$(echo "$0" | sed 's/.*\///')
 if [[ ! "$DOLLARNULL" == *nocolor* ]]; then
@@ -256,10 +263,6 @@ fi
 # now for "normal mode" where no task has been started
 if [ -z "$1" ]; then	# if no arguments given, print all tasks today and tomorrow
 			# use the following syntax: directory name, day in "readable case" and name of color variable
-	if [[ "$CRINGE_MODE" != 0 ]]; then
-		HEADLINEOUT=${HEADLINE[$(shuf -i 0-$((${#HEADLINE[@]}-1)) -n 1)]}
-		echo -e "${BOLD}$HEADLINEOUT${NC}"
-	fi
 	print_tasks 'today' 'Today:' "$GREEN"
 	print_tasks 'tomorrow' 'Tomorrow:' "$BLUE"
 	print_tasks 'done' 'Done:' "$YELLOW"
