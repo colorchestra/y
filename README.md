@@ -29,6 +29,7 @@ Notice: this branch is unstable and likely to change. Here's the v2 roadmap:
 - [ ] new screenshot
 - [ ] fix rm/vanish completion (borken)
 - [ ] make installable to any directory, with symlink from ~/.local/bin
+- [ ] eliminate the need for BASEDIR
 
 ## Features
 + Ask yourself: "y the hell am I doing this?" with every new task

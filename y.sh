@@ -7,7 +7,8 @@ BASEDIR=~/y
 for dir in "$HOME/.local/share/y" "$HOME/y/data"; do
 	if [ -d "$dir" ]; then
 		DATADIR="$dir"
-		echo "Found datadir: $dir"
+		# TODO log as debug
+		#echo "Found datadir: $dir"
 		break
 	fi
 done
@@ -27,6 +28,11 @@ if [[ ! "$DOLLARNULL" == *nocolor* ]]; then
 	BOLD='\033[1m'
 	NC='\033[0m' # No Color
 fi
+
+# TODO logging
+#log() {
+#	echo "
+#}
 
 print_tasks() {
 	if [[ ! -d "$DATADIR/$1" ]]; then

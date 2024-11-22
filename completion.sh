@@ -18,7 +18,17 @@ _y() {
                 COMPREPLY=( "${tmp[@]// /\ }" )
 		return 0
 		;;
-	vanish)		# extremely ghetto
+# TODO - check for files prefixed with '! '
+#		prio|prioritize)
+#		 	#if [[ "$cur" == "! *"]]; then
+#		 	#	cur="$(echo $cur | cut -c 3-)"
+#			#fi
+#			IFS=$'\n' tmp=( $(compgen -W "$(ls ~/y/data/today)" -- "${COMP_WORDS[$COMP_CWORD]}" ))
+#            COMPREPLY=( "${tmp[@]// /\ }" )
+#			return 0
+#			;;
+
+	vanish|rm)		# extremely ghetto
 		opts="today tomorrow"
 		case "${prev}" in
 			today)
