@@ -2,9 +2,10 @@
 
 DATADIR="$HOME/.local/share/y"
 
-printf "Copying binary to ~/.local/bin..."
+printf "Copying binary to ~/.local/bin... "
 # TODO check if already present etc
 cp ./y "$HOME/.local/bin/y"
+printf "Successful.\n"
 
 printf "Creating nocolor symlink... "
 if [ ! -h "$HOME/.local/bin/y-nocolor" ]; then
