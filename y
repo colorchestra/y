@@ -174,7 +174,7 @@ next_day() {
 		echo "$COMMITOUTPUT" >> $DATADIR/git.log
 		if [[ $(git remote show) ]] ; then
 			printf "+ git push... "
-			PUSHOUTPUT=$(git push -u origin master 2>&1)
+			PUSHOUTPUT=$(git push -u origin 2>&1)
 			if [[ $? -eq 0 ]]; then
 				printf "${GREEN}%14s${NC}\n" "Successful"
 				echo "$COMMITOUTPUT" >> $DATADIR/git.log
