@@ -1,9 +1,6 @@
 #!/bin/bash
 
-# Constants
-BASEDIR=~/y
-
-# find the data directory
+# find the data directory: new and legacy
 for dir in "$HOME/.local/share/y" "$HOME/y/data"; do
 	if [ -d "$dir" ]; then
 		DATADIR="$dir"
@@ -87,7 +84,7 @@ add_task() {
 
 # helper functions, wow!
 _check_if_task_started() {
-	if [ -z "$(ls -A "$DATADIR"/started)" ]; then
+	if [[ ! "$(find "$DATADIR/started" -maxdepth 1 -type f)" ]]; then
 	   return 1
 	else
 	   return 0 
@@ -138,7 +135,6 @@ next_day() {
 	if [[ ! -d "$DATADIR"/archive/"$DATE_OF_WORKDAY" ]]; then
 		mkdir "$DATADIR"/archive/"$DATE_OF_WORKDAY"
 	fi	
-	# TODO: find here vs ls above?
 	if [[ ! "$(find . -maxdepth 1 -type f)" ]]; then
 		echo "u did absolutely nothing $1."  
 	else
@@ -163,34 +159,34 @@ next_day() {
 
     cd "$DATADIR" || exit 1
 	COMMITMESSAGE="End of day $(date '+%F %T')"
-	echo "======== Begin Git log for commit '$COMMITMESSAGE' ========" >> $DATADIR/git.log
-	git add --all >> $DATADIR/git.log
+	echo "======== Begin Git log for commit '$COMMITMESSAGE' ========" >> "${DATADIR}/git.log"
+	git add --all >> "${DATADIR}/git.log"
 	printf "+ git commit... "
 	COMMITOUTPUT=$(git commit -m "$COMMITMESSAGE")
 	# TODO
 	# shellcheck disable=SC2181
 	if [[ $? -eq 0 ]]; then
 		printf "${GREEN}%12s${NC}\n" "Successful"
-		echo "$COMMITOUTPUT" >> $DATADIR/git.log
+		echo "$COMMITOUTPUT" >> "${DATADIR}/git.log"
 		if [[ $(git remote show) ]] ; then
 			printf "+ git push... "
 			PUSHOUTPUT=$(git push -u origin 2>&1)
 			if [[ $? -eq 0 ]]; then
 				printf "${GREEN}%14s${NC}\n" "Successful"
-				echo "$COMMITOUTPUT" >> $DATADIR/git.log
+				echo "$COMMITOUTPUT" >> "${DATADIR}/git.log"
 			else
 				printf "${RED}%10s${NC}\n" "Failed"
-				echo "$PUSHOUTPUT" >> $DATADIR/git.log
+				echo "$PUSHOUTPUT" >> "${DATADIR}/git.log"
 				echo "$PUSHOUTPUT"
 			fi
 		fi
 
 	else
 		printf "${RED}%8s${NC}\n" "Failed"
-		echo "$COMMITOUTPUT" >> $DATADIR/git.log
+		echo "$COMMITOUTPUT" >> "${DATADIR}/git.log"
 		echo "$COMMITOUTPUT"
 	fi
-	echo "========== End Git log for commit '$COMMITMESSAGE' ========" >> $DATADIR/git.log
+	echo "========== End Git log for commit '$COMMITMESSAGE' ========" >> "${DATADIR}/git.log"
 	printf \\n
 	if [[ "$1" == "yesterday" ]]; then
 		echo "Have a great day! 🌞"
@@ -214,7 +210,7 @@ clean() {
     read -rp "Are you SURE you want to irrecoverably delete ALL of your entries? (yes/no) " cleanyn
     case $cleanyn in
          [Yy]*) for i in 'today' 'tomorrow' 'done' 'archive' 'started'; do rm -rf "${DATADIR:?}"/"${i}"/*; done
-         rm $DATADIR/git.log
+         rm "${DATADIR}/git.log"
              echo "All entries deleted."
              ;;
          *) echo "Aborting."
