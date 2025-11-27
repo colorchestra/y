@@ -26,11 +26,6 @@ if [[ ! "$DOLLARNULL" == *nocolor* ]]; then
 	NC='\033[0m' # No Color
 fi
 
-# TODO logging
-#log() {
-#	echo "
-#}
-
 print_tasks() {
 	if [[ ! -d "$DATADIR/$1" ]]; then
 		echo "Directory '$1' not found! Exiting."
@@ -114,10 +109,19 @@ _error_task_doesnt_exist() {
 }
 
 prioritize() {
-	_check_if_task_exists 'today' "$TASK" || _error_task_doesnt_exist "$TASK"
-	if [[ "$TASK" == "! "* ]]; then
-		mv "$DATADIR"/today/"$TASK" "$DATADIR"/today/"$(echo "$TASK" | cut -c3-)"
-		echo "De-prioritized task '$(echo "$TASK" | cut -c3-)'."
+	# we're given a task starting with '! ', assuming we want to deprioritize
+	if [[ "$TASK" == "! "* ]] ; then
+		if [[ -e "$DATADIR/today/$TASK" ]]; then
+			mv "$DATADIR"/today/"$TASK" "$DATADIR"/today/"$(echo "$TASK" | cut -c3-)"
+			echo "De-prioritized task '$(echo "$TASK" | cut -c3-)'."
+		else
+			echo -e "${RED}Error${NC}: task '$*' doesn't exist!"
+		fi
+	# if no !, check if we have a matching prioritized task to deprioritize
+	elif [[ -e "$DATADIR/today/! ${TASK}" ]] ; then
+		mv "${DATADIR}/today/! ${TASK}" "${DATADIR}/today/${TASK}"
+		echo "De-prioritized task ${TASK}"
+	# if not, prioritize
 	else
 		mv "$DATADIR"/today/"$TASK" "$DATADIR"/today/!\ "$TASK"
 		echo "Prioritized task '! $TASK'."
