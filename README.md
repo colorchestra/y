@@ -6,6 +6,38 @@
 
 ![Screenshot](https://i.imgur.com/HjUO133.png)
 
+## You're on the v2 development branch!
+Notice: this branch is unstable and likely to change. Here's the v2 roadmap:
+
+- [x] add "focus mode" to keep track of the task you're currently working on
+- [x] remove "later" / "backlog" feature that no one used
+- [x] remove cringey motivation / demotivation / headline
+- [x] maybe: add new motivation?
+- [ ] ~~maybe: add time tracking? It's almost for free with the inclusion of the start/stop mechanism~~
+- [x] remove instant creation of non-existant tasks with "done"
+- [x] read EDITOR variable, default to vi
+- [x] add GuMo syntax to Feierabend
+- [x] refactor entire codebase, make shellcheck report _nothing_
+- [ ] fix remaining shellcheck todos
+- [ ] clean up other youth sins
+- [ ] add better comments, remove bad comments
+- [x] rename y.sh to y
+- [ ] move things to proper directories (~/.local/bin, ~/.config/something?)
+- [x] fix vanish/rm
+- [ ] fix behaviour of deprioritizing (make callable without !)
+- [ ] rename branch to main
+- [ ] new screenshot
+- [ ] fix rm/vanish completion (borken)
+- [ ] make installable to any directory, with symlink from ~/.local/bin
+- [ ] eliminate the need for BASEDIR
+### setup.sh
+- [ ] check if .local/bin exists on the path find a way to install if it doesn't (either create and add to PATH, or add ~/y to path)
+- [ ] fail if things go wrong, don't write completion.sh to bashrc several times or without BASEDIR
+- [ ] prompt for existing data repo, clone it automatically
+- [ ] add color
+- [ ] auto-create 'tomorrow' after cloning data repo because it's never committed
+
+
 ## Features
 + Ask yourself: "y the hell am I doing this?" with every new task
 + Semi-functional bash completion
@@ -21,14 +53,11 @@
 
 ## Usage
 + `y` -> show all tasks
-+ `y do (today|tomorrow|later) Fix printer` -> Create new task, defaults to 'today', or move to today if it exists tomorrow or later
++ `y do (today|tomorrow) Fix printer` -> Create new task, defaults to 'today', or move to today if it exists tomorrow
 + `y done Fix printer` -> mark task as done
 + `y do Fix printer` (if task already exists) -> open task in Vim to add notes (absolutely not compatible with any other editor, nu-uh, sorry) (not sorry)
 + `y procrastinate Fix printer` -> move task to tomorrow
-+ `y superprocrastinate Fix printer` -> move task to backlog
 + `y prioritize Fix printer` -> toggle mark task as important
-	
-+ `y later` -> take a look at your backlog
 + `y feierabend` -> done for the day
 
 ## Setup

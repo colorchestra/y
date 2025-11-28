@@ -1,21 +1,28 @@
 #!/bin/bash
 
-DATADIR="$HOME/.local/share/y"
-
-printf "Copying binary to ~/.local/bin... "
-# TODO check if already present etc
-cp ./y "$HOME/.local/bin/y"
-printf "Successful.\n"
+BASEDIR=~/y
+DATADIR=$BASEDIR/data/
 
 printf "Creating nocolor symlink... "
-if [ ! -h "$HOME/.local/bin/y-nocolor" ]; then
-	ln -s "$HOME/.local/bin/y" "$HOME/.local/bin/y-nocolor"
+if [ ! -h "$BASEDIR/y-nocolor.sh" ]; then
+	ln -s y.sh y-nocolor.sh
 	printf "Successful.\n"
 else
 	printf "Symlink already exists!\n"
 fi
 
-# TODO: can this go somewhere else?
+echo "Removing old stuff from .bashrc... "
+sed -i '/alias y=/d' ~/.bashrc
+sed -i '/y\/completion.sh/d' ~/.bashrc
+# todo: feedback
+
+printf "Writing new aliases to .bashrc... "
+if echo "alias y='$BASEDIR/y.sh'" >> ~/.bashrc; then
+	printf "Successful.\n"
+else
+	printf "Error!\n"
+fi
+
 printf "Writing completion stuff to .bashrc... "
 if echo "source $BASEDIR/completion.sh" >> ~/.bashrc; then
 	printf "Successful.\n"
