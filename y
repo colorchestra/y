@@ -108,6 +108,30 @@ _error_task_doesnt_exist() {
 	exit 1
 }
 
+_parse_day_and_add_task() {
+	case "$2" in
+		today|tomorrow)
+			DAY=$2
+			shift; shift
+			add_task "$DAY" "$@"
+			exit 0
+			;;
+
+		"")
+			echo "Error: no task name given"
+			show_usage
+			exit 1
+			;;
+		*)
+			DAY=today
+			shift
+			add_task $DAY "$@"
+			exit 0
+			;;
+	esac
+
+}
+
 prioritize() {
 	# we're given a task starting with '! ', assuming we want to deprioritize
 	if [[ "$TASK" == "! "* ]] ; then
@@ -245,9 +269,8 @@ if _check_if_task_started; then
 		exit 0
 	else
 		case "$1" in 
-			do|edit)
-				echo "tbd: edit tasks or add new ones while in focus mode"
-				exit 1
+			do)
+				_parse_day_and_add_task $*
 				;;
 			done)
 				TASK=$(basename "$(find data/started/ -type f)")
@@ -280,28 +303,8 @@ fi
 ### "normal" mode without any started tasks
 case "$1" in 
 	do)
-
-		case "$2" in
-			today|tomorrow)		# parse day
-				DAY=$2
-				shift; shift
-				add_task "$DAY" "$@"
-				exit 0
-				;;
-
-			"")
-				echo "Error: no task name given"
-				show_usage
-				exit 1
-				;;
-			*)
-				DAY=today
-				shift
-				add_task $DAY "$@"
-				;;
-		esac
+		_parse_day_and_add_task $*
 		;;
-
 
 	done)
 		if [ -z "$2" ]; then
