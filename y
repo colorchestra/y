@@ -250,8 +250,10 @@ if _check_if_task_started; then
 				exit 1
 				;;
 			done)
-				echo "tbd: mark task as done and stop focus mode"
-				exit 1
+				TASK=$(basename "$(find data/started/ -type f)")
+				mv "${DATADIR}/started/${TASK}" "${DATADIR}/done/"
+				echo "Done: $TASK".
+				exit 0
 				;;
 			stop)
 	 			mv "$DATADIR"/started/* "$DATADIR"/today/
